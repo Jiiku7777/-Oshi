@@ -1,0 +1,120 @@
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
+import { fetchEvents } from '@/services/eventService'
+import { getGroup } from '@/data/groups'
+import { CategoryBadge } from '@/components/CategoryBadge'
+import { Loading } from '@/components/Loading'
+import { SOURCE_LABEL } from '@/utils/category'
+import { formatDateLong, formatTime } from '@/utils/date'
+import type { OshiEvent } from '@/types'
+
+export function EventDetail() {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { profile } = useAuth()
+  const [event, setEvent] = useState<OshiEvent | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    fetchEvents(profile?.oshiGroupIds ?? [])
+      .then((list) => {
+        if (active) setEvent(list.find((e) => e.id === id) ?? null)
+      })
+      .finally(() => active && setLoading(false))
+    return () => {
+      active = false
+    }
+  }, [id, profile?.oshiGroupIds])
+
+  if (loading) return <Loading />
+
+  if (!event) {
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-6 text-center">
+        <p className="text-sm text-oshi-sub">イベントが見つかりませんでした。</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="rounded-full bg-oshi-pink px-6 py-2.5 font-bold text-white"
+        >
+          戻る
+        </button>
+      </div>
+    )
+  }
+
+  const group = getGroup(event.groupId)
+
+  return (
+    <div className="animate-fade-in">
+      {/* ヘッダー */}
+      <header
+        className="px-5 pb-6 pt-8 text-white"
+        style={{
+          background: `linear-gradient(135deg, ${group?.color ?? '#FF8FB1'}, #B79CED)`,
+        }}
+      >
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/25 text-lg backdrop-blur active:scale-95"
+          aria-label="戻る"
+        >
+          ‹
+        </button>
+        <div className="mb-2">
+          <CategoryBadge category={event.category} />
+        </div>
+        <h1 className="text-xl font-extrabold leading-snug">{event.title}</h1>
+      </header>
+
+      <div className="space-y-3 px-5 py-6">
+        <InfoRow label="日時">
+          {formatDateLong(event.startAt)}
+          <span className="ml-2 font-extrabold text-oshi-pink">
+            {formatTime(event.startAt)}
+            {event.endAt && ` 〜 ${formatTime(event.endAt)}`}
+          </span>
+        </InfoRow>
+
+        <InfoRow label="グループ">
+          <span className="flex items-center gap-2">
+            <span
+              className="h-3 w-3 rounded-full"
+              style={{ backgroundColor: group?.color }}
+            />
+            {group?.name}
+          </span>
+        </InfoRow>
+
+        <InfoRow label="情報ソース">{SOURCE_LABEL[event.source]}</InfoRow>
+
+        {event.description && (
+          <InfoRow label="詳細">
+            <span className="leading-relaxed">{event.description}</span>
+          </InfoRow>
+        )}
+
+        {event.url && (
+          <a
+            href={event.url}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-oshi-pink to-oshi-purple py-3.5 font-bold text-white shadow-card transition active:scale-[0.98]"
+          >
+            🔗 元ページを見る
+          </a>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-card bg-white p-4 shadow-soft">
+      <p className="mb-1 text-xs font-bold text-oshi-sub">{label}</p>
+      <div className="text-sm font-bold text-oshi-text">{children}</div>
+    </div>
+  )
+}

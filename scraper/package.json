@@ -1,0 +1,15 @@
+{
+  "name": "oshihub-scraper",
+  "version": "0.1.0",
+  "description": "OshiHub 無料予定収集スクレイパ（AI不使用・GitHub Actionsで定期実行）",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "collect": "node src/collect.mjs",
+    "dry": "node src/collect.mjs --dry"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "firebase-admin": "^12.6.0"
+  }
+}

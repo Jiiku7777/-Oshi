@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Force | Select-Object Name, Length; Write-Output \"---node---\"; \\(Get-Command node -ErrorAction SilentlyContinue\\).Source; node -v 2>$null; npm -v 2>$null)",
+      "PowerShell(npm install 2>&1)",
+      "Bash(grep -E \"^\\(vite|tsc\\)$\")",
+      "mcp__Claude_Preview__preview_start",
+      "WebFetch(domain:www.nogizaka46.com)",
+      "WebSearch",
+      "WebFetch(domain:fruitszipper.asobisystem.com)",
+      "WebFetch(domain:www.eventernote.com)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)"
+    ]
+  }
+}
