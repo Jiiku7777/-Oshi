@@ -36,6 +36,22 @@ export async function fetchEvents(oshiGroupIds: string[]): Promise<OshiEvent[]> 
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<OshiEvent, 'id'>) }))
 }
 
+/** 単一グループのイベントを取得（公開ページ用・未ログインでも可・時刻昇順） */
+export async function fetchEventsByGroup(groupId: string): Promise<OshiEvent[]> {
+  if (!isFirebaseConfigured || !db) {
+    return MOCK_EVENTS.filter((e) => e.groupId === groupId).sort((a, b) =>
+      a.startAt.localeCompare(b.startAt)
+    )
+  }
+  const q = query(
+    collection(db, 'events'),
+    where('groupId', '==', groupId),
+    orderBy('startAt', 'asc')
+  )
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<OshiEvent, 'id'>) }))
+}
+
 /** 推しグループのニュースを取得（新着順） */
 export async function fetchNews(oshiGroupIds: string[]): Promise<OshiNews[]> {
   if (oshiGroupIds.length === 0) return []

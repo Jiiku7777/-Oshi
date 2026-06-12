@@ -8,6 +8,8 @@ import { Home } from '@/pages/Home'
 import { Calendar } from '@/pages/Calendar'
 import { EventDetail } from '@/pages/EventDetail'
 import { Settings } from '@/pages/Settings'
+import { GroupSchedule } from '@/pages/public/GroupSchedule'
+import { PublicGroups } from '@/pages/public/PublicGroups'
 
 /** ログイン必須ガード。未ログインなら /login、未オンボーディングなら /onboarding へ。 */
 function RequireAuth() {
@@ -35,6 +37,9 @@ function PublicOnly() {
 }
 
 export const router = createBrowserRouter([
+  // 公開ページ（ログイン不要・SEO対象）
+  { path: '/groups', element: <PublicGroups /> },
+  { path: '/g/:groupId', element: <GroupSchedule /> },
   {
     element: <PublicOnly />,
     children: [{ path: '/login', element: <Login /> }],

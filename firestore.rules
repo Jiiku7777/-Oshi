@@ -9,15 +9,15 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
-    // イベント / ニュース: ログインユーザーは読み取りのみ。
+    // イベント / ニュース: 公開情報のため誰でも読み取り可（SEO公開ページ・未ログイン閲覧のため）。
     // 書き込みは AI 収集バックエンド（Admin SDK / サーバー）に限定するため、
     // クライアントからの write は禁止。
     match /events/{eventId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow write: if false;
     }
     match /news/{newsId} {
-      allow read: if request.auth != null;
+      allow read: if true;
       allow write: if false;
     }
   }

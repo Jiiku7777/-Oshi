@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://oshilink-b8fab.web.app/sitemap.xml

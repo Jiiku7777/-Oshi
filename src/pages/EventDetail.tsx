@@ -7,6 +7,7 @@ import { CategoryBadge } from '@/components/CategoryBadge'
 import { Loading } from '@/components/Loading'
 import { SOURCE_LABEL } from '@/utils/category'
 import { formatDateLong, formatTime } from '@/utils/date'
+import { getAffiliateLink } from '@/utils/affiliate'
 import type { OshiEvent } from '@/types'
 
 export function EventDetail() {
@@ -105,7 +106,43 @@ export function EventDetail() {
             🔗 元ページを見る
           </a>
         )}
+
+        <PurchaseLinks event={event} />
       </div>
+    </div>
+  )
+}
+
+/** 購入導線（アフィリエイト）。リリース・グッズ・雑誌掲載で表示。 */
+function PurchaseLinks({ event }: { event: OshiEvent }) {
+  const link = getAffiliateLink(event)
+  if (!link) return null
+  return (
+    <div className="mt-2 rounded-card bg-oshi-pinkLight/40 p-4">
+      <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-oshi-sub">
+        🛒 {link.label}
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <a
+          href={link.amazonUrl}
+          target="_blank"
+          rel="noreferrer nofollow sponsored"
+          className="flex items-center justify-center gap-1.5 rounded-full bg-[#FF9900] py-2.5 text-sm font-bold text-white shadow-soft transition active:scale-95"
+        >
+          Amazon
+        </a>
+        <a
+          href={link.rakutenUrl}
+          target="_blank"
+          rel="noreferrer nofollow sponsored"
+          className="flex items-center justify-center gap-1.5 rounded-full bg-[#BF0000] py-2.5 text-sm font-bold text-white shadow-soft transition active:scale-95"
+        >
+          楽天
+        </a>
+      </div>
+      <p className="mt-2 text-center text-[10px] text-oshi-sub">
+        ※リンクから購入すると当サイトに紹介料が入る場合があります
+      </p>
     </div>
   )
 }

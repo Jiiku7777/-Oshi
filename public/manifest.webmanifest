@@ -1,0 +1,20 @@
+{
+  "name": "OshiHub | 推し活スケジュール",
+  "short_name": "OshiHub",
+  "description": "推しを登録するだけで、AIが予定を自動でカレンダーにまとめる推し活アプリ",
+  "lang": "ja",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF6FB",
+  "theme_color": "#FF8FB1",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

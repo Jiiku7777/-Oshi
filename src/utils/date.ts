@@ -37,6 +37,11 @@ export function isWithinDays(target: Date, days: number, from = new Date()): boo
   return target >= start && target <= end
 }
 
+/** 今日（0時）以降か */
+export function isFutureOrToday(target: Date, from = new Date()): boolean {
+  return target >= startOfDay(from)
+}
+
 export function formatTime(iso: string): string {
   const d = parseDate(iso)
   const h = String(d.getHours()).padStart(2, '0')
