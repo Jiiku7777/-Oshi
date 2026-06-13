@@ -99,6 +99,8 @@ export interface UserProfile {
   rankPublic?: boolean
   /** ランキング表示名（未設定なら displayName を使用） */
   rankName?: string
+  /** ユーザーが設定したアイコン画像（縮小済み data URL）。未設定なら photoURL/絵文字。 */
+  avatar?: string
   createdAt?: string
   updatedAt?: string
 }

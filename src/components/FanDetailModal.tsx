@@ -1,4 +1,5 @@
 import { getGroupName } from '@/data/groups'
+import { Avatar } from '@/components/Avatar'
 import type { LeaderEntry } from '@/services/leaderboardService'
 
 /** ランカーの公開プロフィール（推しグループ・参戦数） */
@@ -11,7 +12,10 @@ export function FanDetailModal({ entry, onClose }: { entry: LeaderEntry; onClose
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-lg font-extrabold">{entry.name}</p>
+          <div className="flex items-center gap-3">
+            <Avatar src={entry.avatar} name={entry.name} size={48} />
+            <p className="text-lg font-extrabold">{entry.name}</p>
+          </div>
           <button
             onClick={onClose}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-oshi-bg text-oshi-sub"

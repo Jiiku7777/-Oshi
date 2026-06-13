@@ -7,6 +7,7 @@ import {
   isPushConfigured,
 } from '@/services/notifications'
 import { GroupSelectCard } from '@/components/GroupSelectCard'
+import { Avatar } from '@/components/Avatar'
 import {
   CATEGORY_META,
   CATEGORY_ORDER,
@@ -32,17 +33,7 @@ export function Settings() {
       <header className="bg-gradient-to-br from-oshi-blue to-oshi-purple px-5 pb-6 pt-8 text-white">
         <h1 className="text-xl font-extrabold">設定</h1>
         <div className="mt-3 flex items-center gap-3">
-          {profile.photoURL ? (
-            <img
-              src={profile.photoURL}
-              alt=""
-              className="h-11 w-11 rounded-full border-2 border-white/60"
-            />
-          ) : (
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/25 text-lg">
-              👤
-            </div>
-          )}
+          <Avatar src={profile.avatar || profile.photoURL} name={profile.displayName ?? undefined} size={44} ring />
           <div>
             <p className="font-bold">{profile.displayName ?? 'ゲスト'}</p>
             <p className="text-xs opacity-90">{profile.email}</p>

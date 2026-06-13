@@ -25,6 +25,8 @@ export interface LeaderEntry {
   oshiDays: number
   /** 推しグループID（公開プロフィール用） */
   groups?: string[]
+  /** ユーザーアイコン（縮小済み data URL） */
+  avatar?: string
   updatedAt: string
 }
 
@@ -44,7 +46,8 @@ export async function upsertLeaderboard(
   uid: string,
   name: string,
   stats: WrappedStats,
-  groups: string[] = []
+  groups: string[] = [],
+  avatar?: string
 ): Promise<void> {
   const entry: LeaderEntry = {
     uid,
@@ -55,6 +58,7 @@ export async function upsertLeaderboard(
     meet: stats.meet,
     oshiDays: stats.oshiDays,
     groups,
+    ...(avatar ? { avatar } : {}),
     updatedAt: new Date().toISOString(),
   }
   if (!isFirebaseConfigured || !db) {
@@ -117,13 +121,15 @@ export async function upsertGroupRankings(
   name: string,
   groupStats: GroupStat[],
   groups: string[] = [],
-  oshiDays = 0
+  oshiDays = 0,
+  avatar?: string
 ): Promise<void> {
+  const av = avatar ? { avatar } : {}
   if (!isFirebaseConfigured || !db) {
     const self = Object.fromEntries(
       groupStats.map((g) => [
         g.groupId,
-        { uid, name: name || 'ファン', score: g.score, live: g.live, event: g.event, meet: g.meet, oshiDays, groups, updatedAt: '' },
+        { uid, name: name || 'ファン', score: g.score, live: g.live, event: g.event, meet: g.meet, oshiDays, groups, ...av, updatedAt: '' },
       ])
     )
     localStorage.setItem(DEMO_GROUP_SELF, JSON.stringify(self))
@@ -141,6 +147,7 @@ export async function upsertGroupRankings(
         meet: g.meet,
         oshiDays,
         groups,
+        ...av,
         updatedAt: new Date().toISOString(),
       })
     )
@@ -202,8 +209,10 @@ export async function upsertMonthly(
   name: string,
   monthKey: string,
   monthly: MonthlyStats,
-  groups: string[] = []
+  groups: string[] = [],
+  avatar?: string
 ): Promise<void> {
+  const av = avatar ? { avatar } : {}
   const rows: { group: string; score: number; live: number; event: number; meet: number }[] = [
     { group: 'all', score: monthly.score, live: monthly.live, event: monthly.event, meet: monthly.meet },
     ...monthly.groups.map((g) => ({
@@ -218,7 +227,7 @@ export async function upsertMonthly(
   if (!isFirebaseConfigured || !db) {
     const store = JSON.parse(localStorage.getItem(DEMO_MONTHLY_SELF) || '{}')
     for (const r of rows) {
-      store[`${monthKey}__${r.group}`] = { uid, name: name || 'ファン', ...r, oshiDays: 0, groups, updatedAt: '' }
+      store[`${monthKey}__${r.group}`] = { uid, name: name || 'ファン', ...r, oshiDays: 0, groups, ...av, updatedAt: '' }
     }
     localStorage.setItem(DEMO_MONTHLY_SELF, JSON.stringify(store))
     return
@@ -235,6 +244,7 @@ export async function upsertMonthly(
         event: r.event,
         meet: r.meet,
         groups,
+        ...av,
         updatedAt: new Date().toISOString(),
       })
     )

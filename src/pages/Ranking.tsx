@@ -13,6 +13,7 @@ import { currentMonthKey, monthLabel, prevMonthKey } from '@/utils/wrapped'
 import { getGroupName } from '@/data/groups'
 import { Loading } from '@/components/Loading'
 import { Seo } from '@/components/Seo'
+import { Avatar } from '@/components/Avatar'
 import { FanDetailModal } from '@/components/FanDetailModal'
 import { RecapReveal } from '@/components/RecapReveal'
 
@@ -146,6 +147,7 @@ export function Ranking() {
                 <span className="w-8 shrink-0 text-center text-lg font-black">
                   {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
                 </span>
+                <Avatar src={l.avatar} name={l.name} size={36} />
                 <span className="min-w-0 flex-1 truncate text-sm font-bold">
                   {l.name}
                   {l.uid === profile?.uid && ' (あなた)'}

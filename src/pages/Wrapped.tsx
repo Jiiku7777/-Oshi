@@ -22,8 +22,10 @@ import {
 } from '@/utils/wrapped'
 import { Loading } from '@/components/Loading'
 import { Seo } from '@/components/Seo'
+import { Avatar } from '@/components/Avatar'
 import { getGroupName } from '@/data/groups'
 import { nativeShare, shareToX } from '@/utils/share'
+import { fileToAvatarDataUrl } from '@/utils/avatar'
 import { SITE } from '@/config/site'
 
 export function Wrapped() {
@@ -40,6 +42,8 @@ export function Wrapped() {
   const rankPublic = profile?.rankPublic !== false
   const displayName = profile?.rankName || profile?.displayName?.split(' ')[0] || 'ファン'
   const oshiIds = profile?.oshiGroupIds ?? []
+  const avatar = profile?.avatar
+  const [avatarBusy, setAvatarBusy] = useState(false)
 
   // 参戦記録 → 集計
   useEffect(() => {
@@ -53,7 +57,7 @@ export function Wrapped() {
         // 月別の保存（当月）も同時に
         const monthly = computeMonthlyStats(records, currentMonthKey())
         if (profile.rankPublic !== false) {
-          upsertMonthly(profile.uid, displayName, currentMonthKey(), monthly, profile.oshiGroupIds ?? [])
+          upsertMonthly(profile.uid, displayName, currentMonthKey(), monthly, profile.oshiGroupIds ?? [], profile.avatar)
         }
       })
       .finally(() => active && setLoading(false))
@@ -67,15 +71,15 @@ export function Wrapped() {
   useEffect(() => {
     if (!stats || !profile) return
     if (rankPublic) {
-      upsertLeaderboard(profile.uid, displayName, stats, oshiIds)
-      upsertGroupRankings(profile.uid, displayName, groupStats, oshiIds, stats.oshiDays)
+      upsertLeaderboard(profile.uid, displayName, stats, oshiIds, avatar)
+      upsertGroupRankings(profile.uid, displayName, groupStats, oshiIds, stats.oshiDays, avatar)
     } else {
       removeFromLeaderboard(profile.uid)
       removeGroupRankings(profile.uid, groupStats.map((g) => g.groupId))
       removeMonthly(profile.uid, currentMonthKey(), groupStats.map((g) => g.groupId))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stats, groupStats, rankPublic, displayName])
+  }, [stats, groupStats, rankPublic, displayName, avatar])
 
   const activeGroup = scope === 'all' ? null : groupStats.find((g) => g.groupId === scope)
   const view = stats && {
@@ -116,6 +120,23 @@ export function Wrapped() {
     setEditing(false)
   }
 
+  const handleAvatarPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // 同じ画像を選び直せるようにリセット
+    if (!file) return
+    setAvatarBusy(true)
+    try {
+      const dataUrl = await fileToAvatarDataUrl(file)
+      await updateProfile({ avatar: dataUrl })
+    } catch (err) {
+      console.error('アイコンの設定に失敗', err)
+    } finally {
+      setAvatarBusy(false)
+    }
+  }
+
+  const removeAvatar = () => updateProfile({ avatar: '' })
+
   return (
     <div className="min-h-dvh bg-gradient-to-br from-oshi-pink via-oshi-purple to-oshi-blue">
       <Seo title="推し活Wrapped" path="/wrapped" noindex />
@@ -143,6 +164,9 @@ export function Wrapped() {
                 ✨ 推し活Wrapped（{scopeLabel}）✨
               </p>
               <div className="mt-3 rounded-2xl bg-white/15 px-5 py-5 text-center">
+                <div className="mb-2 flex justify-center">
+                  <Avatar src={avatar} name={displayName} size={64} ring />
+                </div>
                 <p className="text-sm font-bold opacity-90">{displayName} は</p>
                 <p className="my-1 text-5xl font-black drop-shadow">🏆 上位{view.percent}%</p>
                 <span className="mt-1 inline-block rounded-full bg-white/25 px-4 py-1 text-sm font-bold">
@@ -174,6 +198,34 @@ export function Wrapped() {
 
             {/* 操作 */}
             <div className="mt-3 space-y-2.5 text-white">
+              {/* アイコン設定 */}
+              <div className="flex items-center justify-between rounded-card bg-white/15 px-4 py-3 backdrop-blur">
+                <div className="flex items-center gap-3">
+                  <Avatar src={avatar} name={displayName} size={40} ring />
+                  <span className="text-sm font-bold">アイコン</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {avatar && (
+                    <button
+                      onClick={removeAvatar}
+                      className="rounded-full bg-white/25 px-3 py-1 text-xs font-bold"
+                    >
+                      削除
+                    </button>
+                  )}
+                  <label className="cursor-pointer rounded-full bg-white px-3 py-1 text-xs font-bold text-oshi-pink">
+                    {avatarBusy ? '設定中…' : avatar ? '変更' : '画像を選ぶ'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={avatarBusy}
+                      onChange={handleAvatarPick}
+                    />
+                  </label>
+                </div>
+              </div>
+
               <div className="rounded-card bg-white/15 px-4 py-3 backdrop-blur">
                 {editing ? (
                   <div className="flex items-center gap-2">

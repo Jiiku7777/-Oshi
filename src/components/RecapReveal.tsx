@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { toPng } from 'html-to-image'
 import { monthLabel } from '@/utils/wrapped'
 import { getGroupName } from '@/data/groups'
+import { Avatar } from './Avatar'
 import type { LeaderEntry } from '@/services/leaderboardService'
 
 /**
@@ -105,6 +106,9 @@ export function RecapReveal({
               isFirst ? 'ring-4 ring-white/60' : ''
             }`}
           >
+            <div className="mb-2 flex justify-center">
+              <Avatar src={cur.avatar} name={cur.name} size={isFirst ? 72 : 56} ring />
+            </div>
             <p className="text-3xl font-black">{cur.name}</p>
             <div className="mt-2 flex justify-center gap-4 text-sm font-bold">
               <span>🎤 {cur.live}</span>
@@ -141,6 +145,7 @@ export function RecapReveal({
                   <span className="w-7 text-center text-lg font-black">
                     {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}
                   </span>
+                  <Avatar src={l.avatar} name={l.name} size={32} />
                   <span className="min-w-0 flex-1 truncate text-base font-extrabold">{l.name}</span>
                   <span className="shrink-0 text-xs font-bold opacity-90">💞{l.meet}回</span>
                 </div>
