@@ -40,18 +40,6 @@ export function Home() {
       </header>
 
       <div className="space-y-7 px-5 pt-6">
-        {/* 推し活Wrapped 入口 */}
-        <Link
-          to="/wrapped"
-          className="flex items-center justify-between rounded-card bg-gradient-to-r from-oshi-purple to-oshi-pink p-4 text-white shadow-card active:scale-[0.98]"
-        >
-          <span>
-            <span className="block text-sm font-extrabold">✨ あなたの推し活レベル</span>
-            <span className="block text-xs opacity-90">上位何％ファン？ 今すぐチェック</span>
-          </span>
-          <span className="text-2xl">🏆</span>
-        </Link>
-
         {loading ? (
           <Loading label="推しの予定を集めています…" />
         ) : (

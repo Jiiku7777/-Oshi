@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { fetchAttendance } from '@/services/attendanceService'
 import {
   fetchGroupTop,
+  fetchLeader,
   fetchTopLeaders,
   removeFromLeaderboard,
   removeGroupRankings,
@@ -35,6 +36,14 @@ export function Wrapped() {
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
   const [nameDraft, setNameDraft] = useState('')
+  const [selected, setSelected] = useState<LeaderEntry | null>(null)
+
+  // ランキングの名前タップ → 公開プロフィール表示
+  const openFan = async (entry: LeaderEntry) => {
+    setSelected(entry) // まず手元の情報で即表示
+    const full = await fetchLeader(entry.uid) // 総合プロフィールで上書き（推しグループ・日数）
+    if (full) setSelected({ ...entry, ...full })
+  }
 
   const rankPublic = profile?.rankPublic !== false
   const displayName = profile?.rankName || profile?.displayName?.split(' ')[0] || 'ファン'
@@ -62,8 +71,8 @@ export function Wrapped() {
     let active = true
     const run = async () => {
       if (rankPublic) {
-        await upsertLeaderboard(profile.uid, displayName, stats)
-        await upsertGroupRankings(profile.uid, displayName, groupStats)
+        await upsertLeaderboard(profile.uid, displayName, stats, oshiIds)
+        await upsertGroupRankings(profile.uid, displayName, groupStats, oshiIds, stats.oshiDays)
       } else {
         await removeFromLeaderboard(profile.uid)
         await removeGroupRankings(profile.uid, groupStats.map((g) => g.groupId))
@@ -188,15 +197,22 @@ export function Wrapped() {
 
               {/* ランキング */}
               <div className="mt-4 rounded-2xl bg-white/15 p-3">
-                <p className="mb-2 text-sm font-extrabold">🏆 {scopeLabel}ファンランキング</p>
+                <p className="mb-1 text-sm font-extrabold">🏆 {scopeLabel}ファンランキング TOP10</p>
+                <p className="mb-2 text-[11px] opacity-80">名前をタップでプロフィール表示</p>
                 <div className="space-y-1.5">
                   {leaders.slice(0, 10).map((l, i) => (
-                    <LeaderRow key={l.uid} rank={i + 1} entry={l} me={l.uid === profile?.uid} />
+                    <LeaderRow
+                      key={l.uid}
+                      rank={i + 1}
+                      entry={l}
+                      me={l.uid === profile?.uid}
+                      onTap={() => openFan(l)}
+                    />
                   ))}
                   {myRank && myRank > 10 && (
                     <>
                       <p className="py-1 text-center text-xs opacity-70">…</p>
-                      <LeaderRow rank={myRank} entry={leaders[myRank - 1]} me />
+                      <LeaderRow rank={myRank} entry={leaders[myRank - 1]} me onTap={() => openFan(leaders[myRank - 1])} />
                     </>
                   )}
                   {leaders.length === 0 && (
@@ -288,6 +304,8 @@ export function Wrapped() {
           </div>
         )}
       </div>
+
+      {selected && <FanDetailModal entry={selected} onClose={() => setSelected(null)} />}
     </div>
   )
 }
@@ -316,16 +334,92 @@ function MiniStat({ emoji, label, value }: { emoji: string; label: string; value
   )
 }
 
-function LeaderRow({ rank, entry, me }: { rank: number; entry: LeaderEntry; me?: boolean }) {
+function LeaderRow({
+  rank,
+  entry,
+  me,
+  onTap,
+}: {
+  rank: number
+  entry: LeaderEntry
+  me?: boolean
+  onTap?: () => void
+}) {
   const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}`
   return (
-    <div className={`flex items-center gap-2 rounded-xl px-3 py-2 ${me ? 'bg-white text-oshi-pink' : ''}`}>
+    <button
+      onClick={onTap}
+      className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left transition active:scale-[0.98] ${
+        me ? 'bg-white text-oshi-pink' : 'hover:bg-white/10'
+      }`}
+    >
       <span className="w-7 shrink-0 text-center text-sm font-black">{medal}</span>
-      <span className="min-w-0 flex-1 truncate text-sm font-bold">
+      <span className="min-w-0 flex-1 truncate text-sm font-bold underline-offset-2">
         {entry.name}
         {me && ' (あなた)'}
       </span>
       <span className="shrink-0 text-xs font-bold opacity-90">会った{entry.meet}回</span>
+    </button>
+  )
+}
+
+/** ランカーの公開プロフィール（モーダル） */
+function FanDetailModal({ entry, onClose }: { entry: LeaderEntry; onClose: () => void }) {
+  const groups = entry.groups ?? []
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-card bg-white p-5 text-oshi-text shadow-card"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-lg font-extrabold">{entry.name}</p>
+          <button
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-oshi-bg text-oshi-sub"
+            aria-label="閉じる"
+          >
+            ✕
+          </button>
+        </div>
+
+        <p className="mb-1 text-xs font-bold text-oshi-sub">推しているグループ</p>
+        <div className="mb-4 flex flex-wrap gap-1.5">
+          {groups.length ? (
+            groups.map((g) => (
+              <span
+                key={g}
+                className="rounded-full bg-oshi-pinkLight px-2.5 py-1 text-xs font-bold text-oshi-pink"
+              >
+                {getGroupName(g)}
+              </span>
+            ))
+          ) : (
+            <span className="text-sm text-oshi-sub">非公開</span>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <FanStat emoji="🎤" label="ライブ" value={entry.live} />
+          <FanStat emoji="🤝" label="特典会" value={entry.event} />
+          <FanStat emoji="💞" label="会った回数" value={entry.meet} />
+          <FanStat emoji="📅" label="推し活日数" value={entry.oshiDays} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FanStat({ emoji, label, value }: { emoji: string; label: string; value: number }) {
+  return (
+    <div className="rounded-2xl bg-oshi-bg px-3 py-2.5 text-center">
+      <p className="text-xs font-bold text-oshi-sub">
+        {emoji} {label}
+      </p>
+      <p className="text-2xl font-black text-oshi-text">{value}</p>
     </div>
   )
 }

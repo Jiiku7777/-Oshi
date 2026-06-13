@@ -9,7 +9,7 @@ import {
   setDoc,
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from '@/firebase/config'
-import { where } from 'firebase/firestore'
+import { getDoc, where } from 'firebase/firestore'
 import type { GroupStat, WrappedStats } from '@/utils/wrapped'
 
 // 公開ファンランキング。leaderboard/{uid}（誰でも読める / 本人のみ書ける）。
@@ -23,6 +23,8 @@ export interface LeaderEntry {
   event: number
   meet: number
   oshiDays: number
+  /** 推しグループID（公開プロフィール用） */
+  groups?: string[]
   updatedAt: string
 }
 
@@ -41,7 +43,8 @@ const DEMO_SEED: LeaderEntry[] = [
 export async function upsertLeaderboard(
   uid: string,
   name: string,
-  stats: WrappedStats
+  stats: WrappedStats,
+  groups: string[] = []
 ): Promise<void> {
   const entry: LeaderEntry = {
     uid,
@@ -51,6 +54,7 @@ export async function upsertLeaderboard(
     event: stats.event,
     meet: stats.meet,
     oshiDays: stats.oshiDays,
+    groups,
     updatedAt: new Date().toISOString(),
   }
   if (!isFirebaseConfigured || !db) {
@@ -82,6 +86,18 @@ export async function fetchTopLeaders(n = 100): Promise<LeaderEntry[]> {
   return snap.docs.map((d) => d.data() as LeaderEntry)
 }
 
+/** 単一ユーザーの公開プロフィール（総合エントリ）を取得 */
+export async function fetchLeader(uid: string): Promise<LeaderEntry | null> {
+  if (!isFirebaseConfigured || !db) {
+    const list = [...DEMO_SEED]
+    const self = localStorage.getItem(DEMO_SELF)
+    if (self) list.push(JSON.parse(self))
+    return list.find((l) => l.uid === uid) ?? null
+  }
+  const snap = await getDoc(doc(db, 'leaderboard', uid))
+  return snap.exists() ? (snap.data() as LeaderEntry) : null
+}
+
 // ===== グループ別ランキング（groupRanking/{groupId__uid}） =====
 
 const gKey = (groupId: string, uid: string) => `${groupId}__${uid}`
@@ -99,13 +115,15 @@ function demoGroupSeed(groupId: string): LeaderEntry[] {
 export async function upsertGroupRankings(
   uid: string,
   name: string,
-  groupStats: GroupStat[]
+  groupStats: GroupStat[],
+  groups: string[] = [],
+  oshiDays = 0
 ): Promise<void> {
   if (!isFirebaseConfigured || !db) {
     const self = Object.fromEntries(
       groupStats.map((g) => [
         g.groupId,
-        { uid, name: name || 'ファン', score: g.score, live: g.live, event: g.event, meet: g.meet, oshiDays: 0, updatedAt: '' },
+        { uid, name: name || 'ファン', score: g.score, live: g.live, event: g.event, meet: g.meet, oshiDays, groups, updatedAt: '' },
       ])
     )
     localStorage.setItem(DEMO_GROUP_SELF, JSON.stringify(self))
@@ -121,7 +139,8 @@ export async function upsertGroupRankings(
         live: g.live,
         event: g.event,
         meet: g.meet,
-        oshiDays: 0,
+        oshiDays,
+        groups,
         updatedAt: new Date().toISOString(),
       })
     )
