@@ -8,6 +8,7 @@ import { Loading } from '@/components/Loading'
 import { SOURCE_LABEL } from '@/utils/category'
 import { formatDateLong, formatTime } from '@/utils/date'
 import { getAffiliateLink } from '@/utils/affiliate'
+import { fetchAttendance, setAttendance } from '@/services/attendanceService'
 import type { OshiEvent } from '@/types'
 
 export function EventDetail() {
@@ -70,6 +71,8 @@ export function EventDetail() {
       </header>
 
       <div className="space-y-3 px-5 py-6">
+        <AttendanceToggle event={event} uid={profile?.uid} />
+
         <InfoRow label="日時">
           {formatDateLong(event.startAt)}
           <span className="ml-2 font-extrabold text-oshi-pink">
@@ -144,6 +147,50 @@ function PurchaseLinks({ event }: { event: OshiEvent }) {
         ※リンクから購入すると当サイトに紹介料が入る場合があります
       </p>
     </div>
+  )
+}
+
+/** 参戦記録トグル（推し活Wrapped の集計元） */
+function AttendanceToggle({ event, uid }: { event: OshiEvent; uid?: string }) {
+  const [attended, setAttended] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    if (!uid) return
+    let active = true
+    fetchAttendance(uid).then((records) => {
+      if (active) setAttended(records.some((r) => r.eventId === event.id))
+    })
+    return () => {
+      active = false
+    }
+  }, [uid, event.id])
+
+  const toggle = async () => {
+    if (!uid) return
+    setBusy(true)
+    const next = !attended
+    setAttended(next)
+    try {
+      await setAttendance(uid, event, next)
+    } catch {
+      setAttended(!next) // 失敗時は戻す
+    }
+    setBusy(false)
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={busy}
+      className={`flex w-full items-center justify-center gap-2 rounded-full py-3.5 font-extrabold shadow-card transition active:scale-[0.98] ${
+        attended
+          ? 'bg-oshi-pink text-white'
+          : 'border-2 border-oshi-pink bg-white text-oshi-pink'
+      }`}
+    >
+      {attended ? '✓ 参戦済み！（推し活に記録）' : '＋ 参戦した！を記録'}
+    </button>
   )
 }
 

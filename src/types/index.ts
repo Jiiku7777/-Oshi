@@ -45,6 +45,18 @@ export interface OshiEvent {
   collectedAt?: string
 }
 
+/** ユーザーの参戦記録（推し活Wrapped の集計元） */
+export interface AttendanceRecord {
+  eventId: string
+  groupId: string
+  category: EventCategory
+  /** イベント開始日時（記録時点のスナップショット） */
+  startAt: string
+  title: string
+  /** 記録した日時 */
+  markedAt: string
+}
+
 /** 推しニュース（イベント以外の自由テキスト情報） */
 export interface OshiNews {
   id: string

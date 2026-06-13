@@ -8,6 +8,7 @@ import { Home } from '@/pages/Home'
 import { Calendar } from '@/pages/Calendar'
 import { EventDetail } from '@/pages/EventDetail'
 import { Settings } from '@/pages/Settings'
+import { Wrapped } from '@/pages/Wrapped'
 import { GroupSchedule } from '@/pages/public/GroupSchedule'
 import { PublicGroups } from '@/pages/public/PublicGroups'
 
@@ -59,8 +60,9 @@ export const router = createBrowserRouter([
           { path: '/settings', element: <Settings /> },
         ],
       },
-      // 詳細はナビ無しのフルスクリーン
+      // 詳細・Wrapped はナビ無しのフルスクリーン
       { path: '/event/:id', element: <EventDetail /> },
+      { path: '/wrapped', element: <Wrapped /> },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },
