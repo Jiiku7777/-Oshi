@@ -52,8 +52,11 @@ async function main() {
   }
 
   const now = Date.now()
-  const nowIso = new Date(now).toISOString()
-  const maxIso = new Date(now + 25 * 60 * 60 * 1000).toISOString() // 今後25時間分
+  // 保存される startAt は JST(+09:00) 形式。クエリ境界も同じ +09:00 形式に揃えないと
+  // 文字列比較がズレて深夜帯の予定を取りこぼす/過去予定を拾う。同形式なら辞書順=時系列順。
+  const jstIso = (ms) => new Date(ms + 9 * 60 * 60 * 1000).toISOString().replace('Z', '+09:00')
+  const nowIso = jstIso(now)
+  const maxIso = jstIso(now + 25 * 60 * 60 * 1000) // 今後25時間分
 
   // 直近〜25時間以内に始まる予定だけ取得
   const evSnap = await db
