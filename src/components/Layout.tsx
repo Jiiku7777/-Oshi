@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { BottomNav } from './BottomNav'
+import { MonthlyRecapAuto } from './MonthlyRecapAuto'
 import { useAuth } from '@/contexts/AuthContext'
 import { listenForegroundMessages } from '@/services/notifications'
 
@@ -24,6 +25,7 @@ export function Layout() {
         <Outlet />
       </div>
       <BottomNav />
+      <MonthlyRecapAuto />
     </div>
   )
 }
