@@ -9,7 +9,11 @@ const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY as string | undefined
 
 export type EnableResult =
   | { ok: true }
-  | { ok: false; reason: 'demo' | 'unsupported' | 'no-vapid' | 'denied' | 'no-token' | 'error' }
+  | {
+      ok: false
+      reason: 'demo' | 'unsupported' | 'no-vapid' | 'denied' | 'no-token' | 'error'
+      detail?: string
+    }
 
 /** 端末の通知許可状態 */
 export function currentPermission(): NotificationPermission | 'unsupported' {
@@ -36,6 +40,16 @@ export async function enableNotifications(uid: string): Promise<EnableResult> {
     if (permission !== 'granted') return { ok: false, reason: 'denied' }
 
     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    await navigator.serviceWorker.ready
+
+    // 既存のプッシュ購読が別の鍵だと "push service error" になるので作り直す
+    try {
+      const existing = await registration.pushManager.getSubscription()
+      if (existing) await existing.unsubscribe()
+    } catch {
+      /* noop */
+    }
+
     const token = await getToken(messaging, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: registration,
@@ -46,7 +60,8 @@ export async function enableNotifications(uid: string): Promise<EnableResult> {
     return { ok: true }
   } catch (e) {
     console.error('enableNotifications failed', e)
-    return { ok: false, reason: 'error' }
+    const detail = e instanceof Error ? `${e.name}: ${e.message}` : String(e)
+    return { ok: false, reason: 'error', detail }
   }
 }
 

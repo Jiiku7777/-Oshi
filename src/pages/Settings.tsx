@@ -248,6 +248,8 @@ function PushPermission({ uid }: { uid: string }) {
         if (r.ok) {
           setRegistered(true)
           setMsg('✅ この端末で通知を受け取れます')
+        } else {
+          setMsg(`⚠ 登録できませんでした（${r.reason}${'detail' in r && r.detail ? ': ' + r.detail : ''}）`)
         }
       })
     }
@@ -279,7 +281,7 @@ function PushPermission({ uid }: { uid: string }) {
       setMsg('✅ この端末で通知を受け取れます')
     } else if (res.reason === 'denied')
       setMsg('通知がブロックされています。ブラウザ設定から許可してください。')
-    else setMsg('有効化に失敗しました。時間をおいて再度お試しください。')
+    else setMsg(`⚠ 失敗（${res.reason}${'detail' in res && res.detail ? ': ' + res.detail : ''}）`)
     setBusy(false)
   }
 
