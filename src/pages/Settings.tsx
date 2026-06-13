@@ -10,6 +10,7 @@ import {
 } from '@/services/notifications'
 import { GroupSelectCard } from '@/components/GroupSelectCard'
 import { Avatar } from '@/components/Avatar'
+import { InstallAppCard } from '@/components/InstallAppCard'
 import {
   CATEGORY_META,
   CATEGORY_ORDER,
@@ -42,6 +43,11 @@ export function Settings() {
           </div>
         </div>
       </header>
+
+      {/* ホーム画面にアプリを追加（PWA） */}
+      <div className="px-5 pt-4">
+        <InstallAppCard />
+      </div>
 
       {/* タブ */}
       <div className="sticky top-0 z-10 flex gap-2 bg-oshi-bg px-5 py-3">
