@@ -95,6 +95,10 @@ export interface UserProfile {
   onboarded: boolean
   /** Web Push 用 FCM トークン（複数端末対応） */
   fcmTokens?: string[]
+  /** ランキングに名前を公開するか（既定: 公開） */
+  rankPublic?: boolean
+  /** ランキング表示名（未設定なら displayName を使用） */
+  rankName?: string
   createdAt?: string
   updatedAt?: string
 }
