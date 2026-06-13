@@ -15,6 +15,38 @@ export interface WrappedStats {
   tier: string // 称号
 }
 
+export interface GroupStat {
+  groupId: string
+  live: number
+  event: number
+  meet: number
+  other: number
+  score: number
+}
+
+/** スコア → 上位%（1〜99） */
+export function percentileFromScore(score: number): number {
+  return Math.min(99, Math.max(1, Math.round(99 * Math.exp(-score / 50))))
+}
+
+/** グループ別の参戦スコア（推し活日数は含めず参戦実績のみ） */
+export function computeGroupStats(records: AttendanceRecord[]): GroupStat[] {
+  const map = new Map<string, GroupStat>()
+  for (const r of records) {
+    const g = map.get(r.groupId) ?? { groupId: r.groupId, live: 0, event: 0, meet: 0, other: 0, score: 0 }
+    if (r.category === 'live') g.live++
+    else if (r.category === 'event') g.event++
+    else g.other++
+    map.set(r.groupId, g)
+  }
+  const out = [...map.values()]
+  for (const g of out) {
+    g.meet = g.live + g.event
+    g.score = g.live * 8 + g.event * 4 + g.other * 2
+  }
+  return out.sort((a, b) => b.score - a.score)
+}
+
 /** 上位%から称号を決める */
 function tierName(topPercent: number): string {
   if (topPercent <= 1) return '神推しレベル'
