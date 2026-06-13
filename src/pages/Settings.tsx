@@ -236,11 +236,22 @@ function NotifyTab() {
 function PushPermission({ uid }: { uid: string }) {
   const [perm, setPerm] = useState<string>('default')
   const [busy, setBusy] = useState(false)
+  const [registered, setRegistered] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
 
+  // 開いた時、すでに許可済みなら自動でトークンを保存し直す（取りこぼし防止）
   useEffect(() => {
-    setPerm(currentPermission())
-  }, [])
+    const p = currentPermission()
+    setPerm(p)
+    if (p === 'granted' && isPushConfigured()) {
+      enableNotifications(uid).then((r) => {
+        if (r.ok) {
+          setRegistered(true)
+          setMsg('✅ この端末で通知を受け取れます')
+        }
+      })
+    }
+  }, [uid])
 
   if (!isPushConfigured()) {
     return (
@@ -263,8 +274,10 @@ function PushPermission({ uid }: { uid: string }) {
     setMsg(null)
     const res = await enableNotifications(uid)
     setPerm(currentPermission())
-    if (res.ok) setMsg('✅ この端末で通知を受け取れます')
-    else if (res.reason === 'denied')
+    if (res.ok) {
+      setRegistered(true)
+      setMsg('✅ この端末で通知を受け取れます')
+    } else if (res.reason === 'denied')
       setMsg('通知がブロックされています。ブラウザ設定から許可してください。')
     else setMsg('有効化に失敗しました。時間をおいて再度お試しください。')
     setBusy(false)
@@ -277,15 +290,19 @@ function PushPermission({ uid }: { uid: string }) {
         <div>
           <p className="text-sm font-bold text-oshi-text">🔔 この端末で通知を受け取る</p>
           <p className="text-xs text-oshi-sub">
-            {granted ? '許可済み。下の設定でタイミングを選べます' : 'リマインドを受け取るには許可が必要です'}
+            {registered
+              ? '登録済み。下の設定でタイミングを選べます'
+              : granted
+                ? '許可済み。下のボタンで登録を完了してください'
+                : 'リマインドを受け取るには許可が必要です'}
           </p>
         </div>
         <button
           onClick={handle}
-          disabled={busy || granted}
+          disabled={busy}
           className="shrink-0 rounded-full bg-oshi-pink px-4 py-2 text-sm font-bold text-white shadow-soft transition active:scale-95 disabled:opacity-50"
         >
-          {granted ? '許可済み' : busy ? '設定中…' : '許可する'}
+          {busy ? '設定中…' : registered ? '再登録' : granted ? '登録する' : '許可する'}
         </button>
       </div>
       {msg && <p className="mt-2 text-xs font-bold text-oshi-text">{msg}</p>}
