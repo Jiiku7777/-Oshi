@@ -9,6 +9,8 @@ import { SOURCE_LABEL } from '@/utils/category'
 import { formatDateLong, formatTime } from '@/utils/date'
 import { getAffiliateLink } from '@/utils/affiliate'
 import { fetchAttendance, setAttendance } from '@/services/attendanceService'
+import { addCountdown, removeCountdown, useIsPinned } from '@/services/countdownService'
+import { daysUntil } from '@/utils/date'
 import type { OshiEvent } from '@/types'
 
 export function EventDetail() {
@@ -99,6 +101,8 @@ export function EventDetail() {
           </InfoRow>
         )}
 
+        <CountdownButton event={event} />
+
         {event.url && (
           <a
             href={event.url}
@@ -113,6 +117,25 @@ export function EventDetail() {
         <PurchaseLinks event={event} />
       </div>
     </div>
+  )
+}
+
+/** ホーム画面のカウントダウンへの追加／解除ボタン。過去のイベントでは非表示。 */
+function CountdownButton({ event }: { event: OshiEvent }) {
+  const pinned = useIsPinned(event.id)
+  if (daysUntil(new Date(event.startAt)) < 0) return null
+
+  return (
+    <button
+      onClick={() => (pinned ? removeCountdown(event.id) : addCountdown(event))}
+      className={`mt-2 flex w-full items-center justify-center gap-2 rounded-full py-3.5 font-bold shadow-card transition active:scale-[0.98] ${
+        pinned
+          ? 'border-2 border-oshi-pink bg-white text-oshi-pink'
+          : 'bg-gradient-to-r from-oshi-pink to-oshi-purple text-white'
+      }`}
+    >
+      {pinned ? '✓ ホーム画面に追加済み（タップで解除）' : '⏰ ホーム画面にカウントダウンを追加'}
+    </button>
   )
 }
 

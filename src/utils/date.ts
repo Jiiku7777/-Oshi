@@ -42,6 +42,13 @@ export function isFutureOrToday(target: Date, from = new Date()): boolean {
   return target >= startOfDay(from)
 }
 
+/** 当日を 0 とした「あと何日」（カレンダー日数ベース）。過去は負の値。 */
+export function daysUntil(target: Date, from = new Date()): number {
+  const a = startOfDay(target).getTime()
+  const b = startOfDay(from).getTime()
+  return Math.round((a - b) / 86_400_000)
+}
+
 export function formatTime(iso: string): string {
   const d = parseDate(iso)
   const h = String(d.getHours()).padStart(2, '0')
