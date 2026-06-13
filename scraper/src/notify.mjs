@@ -21,9 +21,33 @@ const CATEGORY_LABEL = {
 const SITE_URL = 'https://oshilink-b8fab.web.app'
 const MAX_LATE_MS = 20 * 60 * 1000 // 遅延・実行間隔のゆらぎを吸収（最大20分の取りこぼし防止）
 
+/** テスト送信: トークンを持つ全ユーザーに1通だけ通知を送る（動作確認用） */
+async function sendTest(db, messaging) {
+  const userSnap = await db.collection('users').get()
+  const users = userSnap.docs
+    .map((d) => ({ uid: d.id, ...d.data() }))
+    .filter((u) => Array.isArray(u.fcmTokens) && u.fcmTokens.length)
+  let ok = 0
+  for (const user of users) {
+    const res = await messaging.sendEachForMulticast({
+      tokens: user.fcmTokens,
+      notification: { title: 'OshiHub 🔔', body: 'テスト通知です。これが届けば設定完了！' },
+      webpush: { fcmOptions: { link: 'https://oshilink-b8fab.web.app' } },
+    })
+    ok += res.successCount
+  }
+  console.log(`テスト送信: ${users.length}ユーザー / 成功${ok}件`)
+}
+
 async function main() {
   const db = initFirestore()
   const messaging = getMessaging()
+
+  if (process.argv.includes('--test')) {
+    await sendTest(db, messaging)
+    return
+  }
+
   const now = Date.now()
   const nowIso = new Date(now).toISOString()
   const maxIso = new Date(now + 25 * 60 * 60 * 1000).toISOString() // 今後25時間分

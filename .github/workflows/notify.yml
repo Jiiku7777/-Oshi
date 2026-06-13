@@ -11,7 +11,12 @@ name: Send reminders (free)
 on:
   schedule:
     - cron: '*/10 * * * *'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      test:
+        description: 'テスト通知を全ユーザーに送る（動作確認用）'
+        type: boolean
+        default: false
 
 # 多重起動を防ぐ
 concurrency:
@@ -35,4 +40,4 @@ jobs:
         working-directory: scraper
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node src/notify.mjs
+        run: node src/notify.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.test) && '--test' || '' }}
