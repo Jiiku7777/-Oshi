@@ -179,6 +179,9 @@ function NotifyTab() {
       {/* 端末でのプッシュ通知許可 */}
       <PushPermission uid={profile!.uid} />
 
+      {/* 通知の受信条件の案内 */}
+      <NotificationHelp />
+
       <div className={n.enabled ? '' : 'pointer-events-none opacity-40'}>
         {/* 通知タイミング */}
         <Group title="通知タイミング" sub="複数選択できます">
@@ -308,6 +311,53 @@ function PushPermission({ uid }: { uid: string }) {
         </button>
       </div>
       {msg && <p className="mt-2 text-xs font-bold text-oshi-text">{msg}</p>}
+    </div>
+  )
+}
+
+/** 通知がいつ届くか（端末別の条件）の案内。折りたたみ式。 */
+function NotificationHelp() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="rounded-card bg-white px-4 py-3 shadow-soft">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between text-left"
+      >
+        <span className="text-sm font-bold text-oshi-text">
+          📲 アプリを閉じても通知は届きます
+        </span>
+        <span className="text-oshi-sub">{open ? '−' : '＋'}</span>
+      </button>
+      {open && (
+        <div className="mt-3 space-y-3 text-xs leading-relaxed text-oshi-sub">
+          <p>
+            通知は端末の裏側で受け取るので、アプリやタブを閉じていても届きます。確実に受け取るには端末ごとに以下を確認してください。
+          </p>
+          <div>
+            <p className="font-bold text-oshi-text">📱 スマホ（おすすめ）</p>
+            <p>
+              ブラウザのメニューから<b>「ホーム画面に追加」</b>し、その<b>アイコンから開いて</b>通知を許可すると、
+              LINEのようにアプリを閉じていても・画面ロック中でも届きます。
+              <br />
+              <span className="text-oshi-pink">※iPhoneは「ホーム画面に追加」が必須です（iOS16.4以降）。</span>
+            </p>
+          </div>
+          <div>
+            <p className="font-bold text-oshi-text">💻 パソコン</p>
+            <p>
+              ウィンドウを閉じても、ブラウザが裏で起動していれば届きます。ブラウザを完全に終了すると届きません。
+            </p>
+          </div>
+          <div>
+            <p className="font-bold text-oshi-text">🔕 届かないとき</p>
+            <p>
+              広告ブロッカーやVPN、一部のネットワークが通知をブロックすることがあります。
+              その場合は拡張機能をオフにするか、別のブラウザ・回線でお試しください。
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
