@@ -81,6 +81,8 @@ export interface UserProfile {
   notifications: NotificationSettings
   /** 初回オンボーディング完了フラグ */
   onboarded: boolean
+  /** Web Push 用 FCM トークン（複数端末対応） */
+  fcmTokens?: string[]
   createdAt?: string
   updatedAt?: string
 }

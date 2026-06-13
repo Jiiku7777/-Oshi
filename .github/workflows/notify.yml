@@ -1,0 +1,38 @@
+name: Send reminders (free)
+
+# ログインユーザーへのリマインド通知を送信。
+# 10分間隔で実行 → 「10分前」通知まで対応。重複は reminderLog で防止。
+#
+# ※ GitHub Actions の無料枠について:
+#   - パブリックリポジトリ: 実行時間は無制限（この10分間隔がそのまま使えて理想的）。
+#   - プライベートリポジトリ: 月2000分の無料枠。10分間隔だと枠を超える可能性があるため、
+#     その場合は下の cron を '*/20' などに広げてください（精度はやや落ちます）。
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+# 多重起動を防ぐ
+concurrency:
+  group: notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: scraper/package-lock.json
+      - name: Install deps
+        working-directory: scraper
+        run: npm ci || npm install
+      - name: Send reminders
+        working-directory: scraper
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node src/notify.mjs

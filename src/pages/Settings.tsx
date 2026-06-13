@@ -1,6 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { getGroups, getGroup } from '@/data/groups'
+import {
+  currentPermission,
+  enableNotifications,
+  isPushConfigured,
+} from '@/services/notifications'
 import { GroupSelectCard } from '@/components/GroupSelectCard'
 import {
   CATEGORY_META,
@@ -171,6 +176,9 @@ function NotifyTab() {
         big
       />
 
+      {/* 端末でのプッシュ通知許可 */}
+      <PushPermission uid={profile!.uid} />
+
       <div className={n.enabled ? '' : 'pointer-events-none opacity-40'}>
         {/* 通知タイミング */}
         <Group title="通知タイミング" sub="複数選択できます">
@@ -220,6 +228,67 @@ function NotifyTab() {
           )}
         </Group>
       </div>
+    </div>
+  )
+}
+
+/** 端末のプッシュ通知許可ボタン（FCMトークンを取得・保存） */
+function PushPermission({ uid }: { uid: string }) {
+  const [perm, setPerm] = useState<string>('default')
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState<string | null>(null)
+
+  useEffect(() => {
+    setPerm(currentPermission())
+  }, [])
+
+  if (!isPushConfigured()) {
+    return (
+      <div className="rounded-card bg-amber-50 px-4 py-3 text-xs text-amber-700">
+        プッシュ通知は準備中です（管理者がVAPID鍵を設定すると有効になります）。
+      </div>
+    )
+  }
+
+  if (perm === 'unsupported') {
+    return (
+      <div className="rounded-card bg-white px-4 py-3 text-xs text-oshi-sub">
+        この端末/ブラウザはプッシュ通知に未対応です。iPhoneは「ホーム画面に追加」すると通知が使えます。
+      </div>
+    )
+  }
+
+  const handle = async () => {
+    setBusy(true)
+    setMsg(null)
+    const res = await enableNotifications(uid)
+    setPerm(currentPermission())
+    if (res.ok) setMsg('✅ この端末で通知を受け取れます')
+    else if (res.reason === 'denied')
+      setMsg('通知がブロックされています。ブラウザ設定から許可してください。')
+    else setMsg('有効化に失敗しました。時間をおいて再度お試しください。')
+    setBusy(false)
+  }
+
+  const granted = perm === 'granted'
+  return (
+    <div className="rounded-card bg-gradient-to-r from-oshi-pinkLight to-oshi-purpleLight px-4 py-3.5">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-sm font-bold text-oshi-text">🔔 この端末で通知を受け取る</p>
+          <p className="text-xs text-oshi-sub">
+            {granted ? '許可済み。下の設定でタイミングを選べます' : 'リマインドを受け取るには許可が必要です'}
+          </p>
+        </div>
+        <button
+          onClick={handle}
+          disabled={busy || granted}
+          className="shrink-0 rounded-full bg-oshi-pink px-4 py-2 text-sm font-bold text-white shadow-soft transition active:scale-95 disabled:opacity-50"
+        >
+          {granted ? '許可済み' : busy ? '設定中…' : '許可する'}
+        </button>
+      </div>
+      {msg && <p className="mt-2 text-xs font-bold text-oshi-text">{msg}</p>}
     </div>
   )
 }

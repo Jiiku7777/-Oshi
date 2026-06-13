@@ -20,5 +20,10 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
+
+    // リマインド送信済みマーカー: サーバー(Admin SDK)専用。クライアントからは不可。
+    match /reminderLog/{id} {
+      allow read, write: if false;
+    }
   }
 }

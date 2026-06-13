@@ -1,10 +1,18 @@
+import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { BottomNav } from './BottomNav'
 import { useAuth } from '@/contexts/AuthContext'
+import { listenForegroundMessages } from '@/services/notifications'
 
 /** スマホファーストの中央寄せシェル（最大 max-w-md） */
 export function Layout() {
   const { isDemo } = useAuth()
+
+  // アプリ前面表示中のプッシュ受信を有効化
+  useEffect(() => {
+    listenForegroundMessages()
+  }, [])
+
   return (
     <div className="min-h-dvh bg-oshi-bg">
       <div className="relative mx-auto min-h-dvh max-w-md bg-oshi-bg pb-24">
