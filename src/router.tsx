@@ -9,6 +9,7 @@ import { Calendar } from '@/pages/Calendar'
 import { EventDetail } from '@/pages/EventDetail'
 import { Settings } from '@/pages/Settings'
 import { Wrapped } from '@/pages/Wrapped'
+import { Ranking } from '@/pages/Ranking'
 import { GroupSchedule } from '@/pages/public/GroupSchedule'
 import { PublicGroups } from '@/pages/public/PublicGroups'
 
@@ -61,8 +62,9 @@ export const router = createBrowserRouter([
           { path: '/settings', element: <Settings /> },
         ],
       },
-      // 詳細はナビ無しのフルスクリーン
+      // 詳細・ランキングはナビ無しのフルスクリーン
       { path: '/event/:id', element: <EventDetail /> },
+      { path: '/ranking', element: <Ranking /> },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },

@@ -47,6 +47,54 @@ export function computeGroupStats(records: AttendanceRecord[]): GroupStat[] {
   return out.sort((a, b) => b.score - a.score)
 }
 
+// ===== 月別集計 =====
+
+/** "YYYY-MM" 形式の当月キー */
+export function currentMonthKey(d = new Date()): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
+/** 先月のキー */
+export function prevMonthKey(d = new Date()): string {
+  return currentMonthKey(new Date(d.getFullYear(), d.getMonth() - 1, 1))
+}
+
+/** "2026-06" → "2026年6月" */
+export function monthLabel(key: string): string {
+  const [y, m] = key.split('-')
+  return `${y}年${Number(m)}月`
+}
+
+export interface MonthlyStats {
+  live: number
+  event: number
+  meet: number
+  other: number
+  score: number
+  groups: GroupStat[]
+}
+
+/** 指定月（イベント開催日ベース）の参戦集計 */
+export function computeMonthlyStats(records: AttendanceRecord[], monthKey: string): MonthlyStats {
+  const f = records.filter((r) => r.startAt.slice(0, 7) === monthKey)
+  let live = 0,
+    event = 0,
+    other = 0
+  for (const r of f) {
+    if (r.category === 'live') live++
+    else if (r.category === 'event') event++
+    else other++
+  }
+  return {
+    live,
+    event,
+    meet: live + event,
+    other,
+    score: live * 8 + event * 4 + other * 2,
+    groups: computeGroupStats(f),
+  }
+}
+
 /** 上位%から称号を決める */
 function tierName(topPercent: number): string {
   if (topPercent <= 1) return '神推しレベル'

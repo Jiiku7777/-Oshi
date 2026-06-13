@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from '@/firebase/config'
 import { getDoc, where } from 'firebase/firestore'
-import type { GroupStat, WrappedStats } from '@/utils/wrapped'
+import type { GroupStat, MonthlyStats, WrappedStats } from '@/utils/wrapped'
 
 // 公開ファンランキング。leaderboard/{uid}（誰でも読める / 本人のみ書ける）。
 // ショート動画で「上位◯位だったwww」と自慢できるよう、名前入りで表示する。
@@ -170,6 +170,111 @@ export async function fetchGroupTop(groupId: string, n = 100): Promise<LeaderEnt
   const q = query(
     collection(db, 'groupRanking'),
     where('groupId', '==', groupId),
+    orderBy('score', 'desc'),
+    limit(n)
+  )
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => d.data() as LeaderEntry)
+}
+
+// ===== 月別ランキング（monthlyRanking/{month__group__uid}）。group は 'all' or groupId =====
+
+const mKey = (month: string, group: string, uid: string) => `${month}__${group}__${uid}`
+const DEMO_MONTHLY_SELF = 'oshihub_demo_monthly_self'
+
+function demoMonthlySeed(month: string, group: string): LeaderEntry[] {
+  // 先月キーには「確定済み」の見栄えするダミーを入れて演出を試せるようにする
+  const base =
+    group === 'all'
+      ? [
+          { uid: 'm1', name: 'みれいP', score: 96, live: 8, event: 6, meet: 14, oshiDays: 0, groups: ['fruits-zipper', 'cutie-street'], updatedAt: '' },
+          { uid: 'm2', name: 'ゆめお', score: 72, live: 6, event: 4, meet: 10, oshiDays: 0, groups: ['nogizaka46'], updatedAt: '' },
+          { uid: 'm3', name: 'さくら推し', score: 52, live: 4, event: 3, meet: 7, oshiDays: 0, groups: ['sakurazaka46'], updatedAt: '' },
+          { uid: 'm4', name: 'のぎ担A', score: 36, live: 3, event: 1, meet: 4, oshiDays: 0, groups: ['nogizaka46'], updatedAt: '' },
+          { uid: 'm5', name: 'ひな', score: 20, live: 1, event: 2, meet: 3, oshiDays: 0, groups: ['hinatazaka46'], updatedAt: '' },
+          { uid: 'm6', name: 'こはく', score: 8, live: 1, event: 0, meet: 1, oshiDays: 0, groups: ['candy-tune'], updatedAt: '' },
+        ]
+      : demoGroupSeed(group)
+  void month
+  return base
+}
+
+/** 当月の自分のスコアを保存（総合＋グループ別） */
+export async function upsertMonthly(
+  uid: string,
+  name: string,
+  monthKey: string,
+  monthly: MonthlyStats,
+  groups: string[] = []
+): Promise<void> {
+  const rows: { group: string; score: number; live: number; event: number; meet: number }[] = [
+    { group: 'all', score: monthly.score, live: monthly.live, event: monthly.event, meet: monthly.meet },
+    ...monthly.groups.map((g) => ({
+      group: g.groupId,
+      score: g.score,
+      live: g.live,
+      event: g.event,
+      meet: g.meet,
+    })),
+  ]
+
+  if (!isFirebaseConfigured || !db) {
+    const store = JSON.parse(localStorage.getItem(DEMO_MONTHLY_SELF) || '{}')
+    for (const r of rows) {
+      store[`${monthKey}__${r.group}`] = { uid, name: name || 'ファン', ...r, oshiDays: 0, groups, updatedAt: '' }
+    }
+    localStorage.setItem(DEMO_MONTHLY_SELF, JSON.stringify(store))
+    return
+  }
+  await Promise.all(
+    rows.map((r) =>
+      setDoc(doc(db!, 'monthlyRanking', mKey(monthKey, r.group, uid)), {
+        month: monthKey,
+        group: r.group,
+        uid,
+        name: name || 'ファン',
+        score: r.score,
+        live: r.live,
+        event: r.event,
+        meet: r.meet,
+        groups,
+        updatedAt: new Date().toISOString(),
+      })
+    )
+  )
+}
+
+/** 当月の自分の月別エントリを削除（名前非公開時） */
+export async function removeMonthly(
+  uid: string,
+  monthKey: string,
+  groupIds: string[]
+): Promise<void> {
+  if (!isFirebaseConfigured || !db) {
+    localStorage.removeItem(DEMO_MONTHLY_SELF)
+    return
+  }
+  const groups = ['all', ...groupIds]
+  await Promise.all(groups.map((g) => deleteDoc(doc(db!, 'monthlyRanking', mKey(monthKey, g, uid)))))
+}
+
+/** 月別 上位 n 件（group: 'all' or groupId） */
+export async function fetchMonthlyTop(
+  monthKey: string,
+  group = 'all',
+  n = 100
+): Promise<LeaderEntry[]> {
+  if (!isFirebaseConfigured || !db) {
+    const list = demoMonthlySeed(monthKey, group)
+    const store = JSON.parse(localStorage.getItem(DEMO_MONTHLY_SELF) || '{}')
+    const self = store[`${monthKey}__${group}`]
+    if (self) list.push(self)
+    return list.sort((a, b) => b.score - a.score).slice(0, n)
+  }
+  const q = query(
+    collection(db, 'monthlyRanking'),
+    where('month', '==', monthKey),
+    where('group', '==', group),
     orderBy('score', 'desc'),
     limit(n)
   )

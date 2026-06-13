@@ -38,6 +38,12 @@ service cloud.firestore {
       allow write: if request.auth != null && docId.split('__')[1] == request.auth.uid;
     }
 
+    // 月別ランキング（docId: "{month}__{group}__{uid}"）: 公開読み取り、本人のみ書き込み。
+    match /monthlyRanking/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null && docId.split('__')[2] == request.auth.uid;
+    }
+
     // リマインド送信済みマーカー: サーバー(Admin SDK)専用。クライアントからは不可。
     match /reminderLog/{id} {
       allow read, write: if false;
