@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEvents, useNews } from '@/hooks/useEvents'
 import { EventCard } from '@/components/EventCard'
-import { CountdownSection } from '@/components/CountdownSection'
 import { Loading } from '@/components/Loading'
 import { getGroup } from '@/data/groups'
 import { isSameDay, isWithinDays, parseDate, formatDateShort } from '@/utils/date'
@@ -45,9 +44,6 @@ export function Home() {
           <Loading label="推しの予定を集めています…" />
         ) : (
           <>
-            {/* カウントダウン（ピン留め） */}
-            <CountdownSection />
-
             {/* 今日の予定（最も目立たせる） */}
             <section>
               <SectionTitle emoji="🔥" title="今日の予定" accent />

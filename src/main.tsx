@@ -2,6 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
+import { initInstallCapture } from './utils/pwa'
+
+// PWAインストールプロンプトを早期に捕捉（ボタン押下時に設置できるよう）
+initInstallCapture()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

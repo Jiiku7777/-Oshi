@@ -9,8 +9,7 @@ import { SOURCE_LABEL } from '@/utils/category'
 import { formatDateLong, formatTime } from '@/utils/date'
 import { getAffiliateLink } from '@/utils/affiliate'
 import { fetchAttendance, setAttendance } from '@/services/attendanceService'
-import { addCountdown, removeCountdown, useIsPinned } from '@/services/countdownService'
-import { daysUntil } from '@/utils/date'
+import { useInstallPrompt } from '@/utils/pwa'
 import type { OshiEvent } from '@/types'
 
 export function EventDetail() {
@@ -101,7 +100,7 @@ export function EventDetail() {
           </InfoRow>
         )}
 
-        <CountdownButton event={event} />
+        <InstallButton />
 
         {event.url && (
           <a
@@ -120,22 +119,46 @@ export function EventDetail() {
   )
 }
 
-/** ホーム画面のカウントダウンへの追加／解除ボタン。過去のイベントでは非表示。 */
-function CountdownButton({ event }: { event: OshiEvent }) {
-  const pinned = useIsPinned(event.id)
-  if (daysUntil(new Date(event.startAt)) < 0) return null
+/** スマホのホーム画面にアプリ（PWA）を追加するボタン。インストール済みなら非表示。 */
+function InstallButton() {
+  const { canInstall, promptInstall, ios, standalone } = useInstallPrompt()
+  const [showHelp, setShowHelp] = useState(false)
+
+  if (standalone) return null // 既にホーム画面アプリとして起動中
+
+  const handle = async () => {
+    if (canInstall) {
+      const res = await promptInstall()
+      if (res === 'unavailable') setShowHelp(true)
+    } else {
+      setShowHelp(true) // iOS や 未対応ブラウザは手順を案内
+    }
+  }
 
   return (
-    <button
-      onClick={() => (pinned ? removeCountdown(event.id) : addCountdown(event))}
-      className={`mt-2 flex w-full items-center justify-center gap-2 rounded-full py-3.5 font-bold shadow-card transition active:scale-[0.98] ${
-        pinned
-          ? 'border-2 border-oshi-pink bg-white text-oshi-pink'
-          : 'bg-gradient-to-r from-oshi-pink to-oshi-purple text-white'
-      }`}
-    >
-      {pinned ? '✓ ホーム画面に追加済み（タップで解除）' : '⏰ ホーム画面にカウントダウンを追加'}
-    </button>
+    <div className="mt-2">
+      <button
+        onClick={handle}
+        className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-oshi-pink to-oshi-purple py-3.5 font-bold text-white shadow-card transition active:scale-[0.98]"
+      >
+        📲 ホーム画面にアプリを追加
+      </button>
+      {showHelp && (
+        <div className="mt-2 rounded-card bg-white p-4 text-xs leading-relaxed text-oshi-sub shadow-soft">
+          {ios ? (
+            <p>
+              Safari下部の<b>共有ボタン</b>（□に↑）をタップ →{' '}
+              <b>「ホーム画面に追加」</b>を選ぶと、アイコンがホーム画面に追加されます。
+            </p>
+          ) : (
+            <p>
+              ブラウザのメニュー（⋮）から<b>「アプリをインストール」</b>または
+              <b>「ホーム画面に追加」</b>を選ぶと、アイコンがホーム画面に追加されます。
+            </p>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
