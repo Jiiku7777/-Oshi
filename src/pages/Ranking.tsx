@@ -6,6 +6,7 @@ import {
   fetchLeader,
   fetchMonthlyTop,
   fetchTopLeaders,
+  SAMPLE_TOP5,
   type LeaderEntry,
 } from '@/services/leaderboardService'
 import { currentMonthKey, monthLabel, prevMonthKey } from '@/utils/wrapped'
@@ -27,7 +28,7 @@ export function Ranking() {
   const [leaders, setLeaders] = useState<LeaderEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<LeaderEntry | null>(null)
-  const [recap, setRecap] = useState<{ entries: LeaderEntry[]; label: string } | null>(null)
+  const [recap, setRecap] = useState<{ entries: LeaderEntry[]; label: string; sample: boolean } | null>(null)
 
   const thisMonth = currentMonthKey()
   const lastMonth = prevMonthKey()
@@ -64,8 +65,14 @@ export function Ranking() {
   }
 
   const showRecap = async () => {
-    const entries = await fetchMonthlyTop(lastMonth, scope, 5)
-    setRecap({ entries, label: scope === 'all' ? '総合' : getGroupName(scope) })
+    const real = await fetchMonthlyTop(lastMonth, scope, 5)
+    // 実データが少ない間は演出体験用サンプルで発表（実データ3人以上で自動的に本物へ）
+    const sample = real.length < 3
+    setRecap({
+      entries: sample ? SAMPLE_TOP5 : real,
+      label: scope === 'all' ? '総合' : getGroupName(scope),
+      sample,
+    })
   }
 
   const scopeLabel = scope === 'all' ? '総合' : getGroupName(scope)
@@ -162,6 +169,7 @@ export function Ranking() {
           monthKey={lastMonth}
           scopeLabel={recap.label}
           entries={recap.entries}
+          sample={recap.sample}
           onClose={() => setRecap(null)}
         />
       )}

@@ -12,11 +12,13 @@ export function RecapReveal({
   monthKey,
   scopeLabel,
   entries,
+  sample,
   onClose,
 }: {
   monthKey: string
   scopeLabel: string
   entries: LeaderEntry[]
+  sample?: boolean
   onClose: () => void
 }) {
   const top = entries.slice(0, 5)
@@ -74,6 +76,11 @@ export function RecapReveal({
       {/* イントロ */}
       {step === 0 && (
         <div className="animate-fade-in text-center text-white">
+          {sample && (
+            <span className="mb-3 inline-block rounded-full bg-white/25 px-3 py-1 text-xs font-bold">
+              サンプル（来月から本物のランキングに）
+            </span>
+          )}
           <p className="text-sm font-bold tracking-widest opacity-90">📣 月間ファンランキング発表</p>
           <p className="mt-3 text-4xl font-black drop-shadow">{monthLabel(monthKey)}</p>
           <p className="mt-1 text-lg font-extrabold">{scopeLabel} TOP{total}</p>

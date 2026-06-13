@@ -182,21 +182,18 @@ export async function fetchGroupTop(groupId: string, n = 100): Promise<LeaderEnt
 const mKey = (month: string, group: string, uid: string) => `${month}__${group}__${uid}`
 const DEMO_MONTHLY_SELF = 'oshihub_demo_monthly_self'
 
+/** 演出体験用のサンプルTOP5（実データが少ない時のフォールバック） */
+export const SAMPLE_TOP5: LeaderEntry[] = [
+  { uid: 'm1', name: 'みれいP', score: 96, live: 8, event: 6, meet: 14, oshiDays: 0, groups: ['fruits-zipper', 'cutie-street'], updatedAt: '' },
+  { uid: 'm2', name: 'ゆめお', score: 72, live: 6, event: 4, meet: 10, oshiDays: 0, groups: ['nogizaka46'], updatedAt: '' },
+  { uid: 'm3', name: 'さくら推し', score: 52, live: 4, event: 3, meet: 7, oshiDays: 0, groups: ['sakurazaka46'], updatedAt: '' },
+  { uid: 'm4', name: 'のぎ担A', score: 36, live: 3, event: 1, meet: 4, oshiDays: 0, groups: ['nogizaka46'], updatedAt: '' },
+  { uid: 'm5', name: 'ひな', score: 20, live: 1, event: 2, meet: 3, oshiDays: 0, groups: ['hinatazaka46'], updatedAt: '' },
+]
+
 function demoMonthlySeed(month: string, group: string): LeaderEntry[] {
-  // 先月キーには「確定済み」の見栄えするダミーを入れて演出を試せるようにする
-  const base =
-    group === 'all'
-      ? [
-          { uid: 'm1', name: 'みれいP', score: 96, live: 8, event: 6, meet: 14, oshiDays: 0, groups: ['fruits-zipper', 'cutie-street'], updatedAt: '' },
-          { uid: 'm2', name: 'ゆめお', score: 72, live: 6, event: 4, meet: 10, oshiDays: 0, groups: ['nogizaka46'], updatedAt: '' },
-          { uid: 'm3', name: 'さくら推し', score: 52, live: 4, event: 3, meet: 7, oshiDays: 0, groups: ['sakurazaka46'], updatedAt: '' },
-          { uid: 'm4', name: 'のぎ担A', score: 36, live: 3, event: 1, meet: 4, oshiDays: 0, groups: ['nogizaka46'], updatedAt: '' },
-          { uid: 'm5', name: 'ひな', score: 20, live: 1, event: 2, meet: 3, oshiDays: 0, groups: ['hinatazaka46'], updatedAt: '' },
-          { uid: 'm6', name: 'こはく', score: 8, live: 1, event: 0, meet: 1, oshiDays: 0, groups: ['candy-tune'], updatedAt: '' },
-        ]
-      : demoGroupSeed(group)
   void month
-  return base
+  return group === 'all' ? SAMPLE_TOP5 : demoGroupSeed(group)
 }
 
 /** 当月の自分のスコアを保存（総合＋グループ別） */
