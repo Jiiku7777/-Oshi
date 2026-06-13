@@ -3,8 +3,10 @@ import { useAuth } from '@/contexts/AuthContext'
 import { getGroups, getGroup } from '@/data/groups'
 import {
   currentPermission,
+  disableNotifications,
   enableNotifications,
   isPushConfigured,
+  isPushOn,
 } from '@/services/notifications'
 import { GroupSelectCard } from '@/components/GroupSelectCard'
 import { Avatar } from '@/components/Avatar'
@@ -226,27 +228,20 @@ function NotifyTab() {
   )
 }
 
-/** 端末のプッシュ通知許可ボタン（FCMトークンを取得・保存） */
+/** 端末のプッシュ通知 ON/OFF トグル。一度ONにすればOFFにするまで保持する。 */
 function PushPermission({ uid }: { uid: string }) {
-  const [perm, setPerm] = useState<string>('default')
+  const [perm, setPerm] = useState<string>(() => currentPermission())
+  const [on, setOn] = useState<boolean>(() => isPushOn(uid))
   const [busy, setBusy] = useState(false)
-  const [registered, setRegistered] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
 
-  // 開いた時、すでに許可済みなら自動でトークンを保存し直す（取りこぼし防止）
+  // 既にONなら、開いた時にトークンを裏側で静かに維持（取りこぼし防止）。
+  // 失敗してもUIはONのまま（OFFに戻さない）＝「OFFにするまで受け取る」。
   useEffect(() => {
-    const p = currentPermission()
-    setPerm(p)
-    if (p === 'granted' && isPushConfigured()) {
-      enableNotifications(uid).then((r) => {
-        if (r.ok) {
-          setRegistered(true)
-          setMsg('✅ この端末で通知を受け取れます')
-        } else {
-          setMsg(`⚠ 登録できませんでした（${r.reason}${'detail' in r && r.detail ? ': ' + r.detail : ''}）`)
-        }
-      })
+    if (on && currentPermission() === 'granted' && isPushConfigured()) {
+      enableNotifications(uid).catch(() => {})
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid])
 
   if (!isPushConfigured()) {
@@ -265,43 +260,69 @@ function PushPermission({ uid }: { uid: string }) {
     )
   }
 
-  const handle = async () => {
+  const turnOn = async () => {
     setBusy(true)
     setMsg(null)
     const res = await enableNotifications(uid)
     setPerm(currentPermission())
     if (res.ok) {
-      setRegistered(true)
-      setMsg('✅ この端末で通知を受け取れます')
-    } else if (res.reason === 'denied')
+      setOn(true)
+      setMsg('✅ この端末で通知を受け取ります（OFFにするまで有効）')
+    } else if (res.reason === 'denied') {
       setMsg('通知がブロックされています。ブラウザ設定から許可してください。')
-    else setMsg(`⚠ 失敗（${res.reason}${'detail' in res && res.detail ? ': ' + res.detail : ''}）`)
+    } else {
+      setMsg(`⚠ 設定に失敗しました（${res.reason}${'detail' in res && res.detail ? ': ' + res.detail : ''}）`)
+    }
     setBusy(false)
   }
 
+  const turnOff = async () => {
+    setBusy(true)
+    setMsg(null)
+    await disableNotifications(uid)
+    setOn(false)
+    setMsg('通知をOFFにしました。')
+    setBusy(false)
+  }
+
+  const toggle = () => (on ? turnOff() : turnOn())
   const granted = perm === 'granted'
+  // ONなのに端末側で許可が外れている場合だけ注意を出す
+  const needsRepermit = on && !granted
+
   return (
     <div className="rounded-card bg-gradient-to-r from-oshi-pinkLight to-oshi-purpleLight px-4 py-3.5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm font-bold text-oshi-text">🔔 この端末で通知を受け取る</p>
           <p className="text-xs text-oshi-sub">
-            {registered
-              ? '登録済み。下の設定でタイミングを選べます'
-              : granted
-                ? '許可済み。下のボタンで登録を完了してください'
-                : 'リマインドを受け取るには許可が必要です'}
+            {on
+              ? '受け取り中。OFFにするまで有効です'
+              : 'リマインドを受け取るにはONにしてください'}
           </p>
         </div>
         <button
-          onClick={handle}
+          onClick={toggle}
           disabled={busy}
-          className="shrink-0 rounded-full bg-oshi-pink px-4 py-2 text-sm font-bold text-white shadow-soft transition active:scale-95 disabled:opacity-50"
+          aria-label="通知ON/OFF"
+          className={`relative h-7 w-12 shrink-0 rounded-full transition disabled:opacity-50 ${
+            on ? 'bg-oshi-pink' : 'bg-white/70'
+          }`}
         >
-          {busy ? '設定中…' : registered ? '再登録' : granted ? '登録する' : '許可する'}
+          <span
+            className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${
+              on ? 'left-[1.375rem]' : 'left-0.5'
+            }`}
+          />
         </button>
       </div>
-      {msg && <p className="mt-2 text-xs font-bold text-oshi-text">{msg}</p>}
+      {busy && <p className="mt-2 text-xs font-bold text-oshi-text">設定中…</p>}
+      {!busy && msg && <p className="mt-2 text-xs font-bold text-oshi-text">{msg}</p>}
+      {needsRepermit && !busy && (
+        <button onClick={turnOn} className="mt-2 text-xs font-bold text-oshi-pink underline">
+          通知許可が外れています。タップで再設定
+        </button>
+      )}
     </div>
   )
 }

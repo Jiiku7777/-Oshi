@@ -14,12 +14,15 @@ import { initFirestore } from './firestore.mjs'
 
 const TIMINGS = { '1d': 1440, '1h': 60, '30m': 30, '10m': 10 }
 const TIMING_LABEL = { '1d': '明日', '1h': '1時間後', '30m': '30分後', '10m': 'まもなく' }
+// 各タイミングごとの「遅れて送ってもよい猶予（分）」。
+// GitHub Actions の無料 cron は間引かれて毎回は動かないため、実行が飛んでも
+// 取りこぼさないよう猶予を広めに取る（予定時刻を過ぎていれば送らない）。
+const CATCHUP_MIN = { '1d': 360, '1h': 50, '30m': 25, '10m': 12 }
 const CATEGORY_LABEL = {
   live: 'ライブ', event: '特典会', tv: 'テレビ', radio: 'ラジオ',
   youtube: 'YouTube配信', tiktok: 'TikTok LIVE', release: 'リリース', goods: 'グッズ',
 }
 const SITE_URL = 'https://oshilink-b8fab.web.app'
-const MAX_LATE_MS = 20 * 60 * 1000 // 遅延・実行間隔のゆらぎを吸収（最大20分の取りこぼし防止）
 
 /** テスト送信: トークンを持つ全ユーザーに1通だけ通知を送る（動作確認用） */
 async function sendTest(db, messaging) {
@@ -84,11 +87,15 @@ async function main() {
       const start = Date.parse(ev.startAt)
       if (Number.isNaN(start)) continue
 
+      // 既に開催時刻を過ぎた予定は通知しない（「1時間後」が開始後に届くのを防ぐ）
+      if (start <= now) continue
+
       for (const [timing, offMin] of Object.entries(TIMINGS)) {
         if (!n.timings?.[timing]) continue
         const remindAt = start - offMin * 60000
-        // 「ちょうど到来した」ものだけ（過去20分以内）
-        if (remindAt > now || remindAt <= now - MAX_LATE_MS) continue
+        const catchupMs = (CATCHUP_MIN[timing] ?? 15) * 60000
+        // リマインド時刻を過ぎ、かつ猶予内（=実行が飛んでも遅れて拾える）。未来分は送らない。
+        if (remindAt > now || now - remindAt > catchupMs) continue
 
         const markerId = `${user.uid}_${ev.id}_${timing}`
         const ref = db.collection('reminderLog').doc(markerId)
