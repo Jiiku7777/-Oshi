@@ -57,12 +57,12 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <Home /> },
           { path: '/calendar', element: <Calendar /> },
+          { path: '/wrapped', element: <Wrapped /> },
           { path: '/settings', element: <Settings /> },
         ],
       },
-      // 詳細・Wrapped はナビ無しのフルスクリーン
+      // 詳細はナビ無しのフルスクリーン
       { path: '/event/:id', element: <EventDetail /> },
-      { path: '/wrapped', element: <Wrapped /> },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },

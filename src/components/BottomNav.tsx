@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 const items = [
   { to: '/', label: 'ホーム', icon: '🏠', end: true },
   { to: '/calendar', label: 'カレンダー', icon: '📅', end: false },
+  { to: '/wrapped', label: '推し活レベル', icon: '🏆', end: false },
   { to: '/settings', label: '設定', icon: '⚙️', end: false },
 ]
 

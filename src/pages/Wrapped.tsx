@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { toPng } from 'html-to-image'
 import { useAuth } from '@/contexts/AuthContext'
 import { fetchAttendance } from '@/services/attendanceService'
@@ -27,7 +26,6 @@ import { SITE } from '@/config/site'
 
 export function Wrapped() {
   const { profile, updateProfile } = useAuth()
-  const navigate = useNavigate()
   const cardRef = useRef<HTMLDivElement>(null)
 
   const [stats, setStats] = useState<WrappedStats | null>(null)
@@ -135,15 +133,7 @@ export function Wrapped() {
   return (
     <div className="min-h-dvh bg-gradient-to-br from-oshi-pink via-oshi-purple to-oshi-blue">
       <Seo title="推し活Wrapped" path="/wrapped" noindex />
-      <div className="mx-auto min-h-dvh max-w-md px-5 py-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/25 text-lg text-white backdrop-blur active:scale-95"
-          aria-label="戻る"
-        >
-          ‹
-        </button>
-
+      <div className="mx-auto min-h-dvh max-w-md px-5 pt-8 pb-28">
         {loading || !stats || !view ? (
           <div className="text-white">
             <Loading label="集計中…" />
