@@ -123,21 +123,28 @@ export function RankingFilm({
   useEffect(() => {
     const a = audioRef.current
     if (!a) return
-    let imp: number | undefined
+    const timers: number[] = []
     switch (scene) {
       case 'intro': a.start(); a.intensity(0); a.chord('base'); a.beat(0); a.sparkle(); break
       case 'dome': a.start(); a.chord('bright'); a.intensity(2); a.beat(0.4); a.cheer(true); break
       case 'day2': a.cheer(false); a.beat(0); a.intensity(0); break
       case 'venue': a.chord('bright'); a.intensity(2); a.beat(0.45); a.cheer(true); a.sparkle(); break
       case 'dark2': a.cheer(false); a.beat(0); a.intensity(0); break
-      case 'sns': a.cheer(false); a.beat(0.12); a.chord('base'); a.intensity(1); break
+      case 'sns':
+        a.cheer(false); a.beat(0); a.chord('base'); a.intensity(1); a.snsLoop(true)
+        // いいねのタイミング（2.6 / 4.1 / 5.6 秒）で効果音
+        ;[2.6, 4.1, 5.6].forEach((d) => timers.push(window.setTimeout(() => a.likePop(), d * 1000)))
+        break
       case 'black': a.beat(0); a.intensity(0); break
       case 'booth': a.cheer(false); a.beat(0); a.chord('tension'); a.intensity(1); break
       case 'hand': a.chord('tension'); a.intensity(2); a.riser(3.4); break // ガチャの期待ライザー
-      case 'reveal': a.sparkle(); a.chimeUp(); imp = window.setTimeout(() => a.impact(), 850); break
+      case 'reveal': a.sparkle(); a.chimeUp(); timers.push(window.setTimeout(() => a.impact(), 850)); break
       case 'final': a.impact(); a.triumph(); a.cheer(true); break
     }
-    return () => { if (imp) window.clearTimeout(imp) }
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t))
+      a.snsLoop(false)
+    }
   }, [scene])
 
   // アンマウントで停止

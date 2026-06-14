@@ -18,6 +18,7 @@ export class FilmAudio {
   private beatGain: GainNode | null = null
   private beatTimer: number | null = null
   private arpTimer: number | null = null
+  private snsTimer: number | null = null
   private noiseBuf: AudioBuffer | null = null
   muted = false
 
@@ -238,6 +239,44 @@ export class FilmAudio {
     for (let i = 0; i < 6; i++) this.bell(1568 + i * 100, ctx.currentTime + 0.5 + i * 0.06, 0.1, 0.5)
   }
 
+  /** SNS（エゴサ）シーンのかわいいループBGM */
+  snsLoop(on: boolean) {
+    if (on) {
+      if (this.snsTimer || !this.ctx) return
+      const mel = [523.25, 659.25, 783.99, 880, 783.99, 659.25, 587.33, 659.25]
+      let i = 0
+      this.snsTimer = window.setInterval(() => {
+        if (!this.ctx) return
+        this.bell(mel[i % mel.length], this.ctx.currentTime, 0.1, 0.42)
+        if (i % 4 === 0) this.bell(mel[i % mel.length] * 2, this.ctx.currentTime + 0.12, 0.05, 0.3)
+        i++
+      }, 300)
+    } else if (this.snsTimer) {
+      window.clearInterval(this.snsTimer)
+      this.snsTimer = null
+    }
+  }
+
+  /** いいねの効果音（ぽよん♪＋きゅん） */
+  likePop() {
+    const ctx = this.ctx
+    if (!ctx || !this.master) return
+    const t = ctx.currentTime
+    const o = ctx.createOscillator()
+    const g = ctx.createGain()
+    o.type = 'sine'
+    o.frequency.setValueAtTime(620, t)
+    o.frequency.exponentialRampToValueAtTime(990, t + 0.12)
+    g.gain.setValueAtTime(0.0001, t)
+    g.gain.linearRampToValueAtTime(0.22, t + 0.02)
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.24)
+    o.connect(g)
+    g.connect(this.master)
+    o.start(t)
+    o.stop(t + 0.27)
+    this.bell(1760, t + 0.06, 0.14, 0.4)
+  }
+
   /** だーん（インパクト） */
   impact() {
     const ctx = this.ctx
@@ -293,8 +332,10 @@ export class FilmAudio {
   stop() {
     if (this.beatTimer) window.clearInterval(this.beatTimer)
     if (this.arpTimer) window.clearInterval(this.arpTimer)
+    if (this.snsTimer) window.clearInterval(this.snsTimer)
     this.beatTimer = null
     this.arpTimer = null
+    this.snsTimer = null
     try {
       this.ctx?.close()
     } catch {
