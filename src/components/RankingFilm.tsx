@@ -64,7 +64,7 @@ const ORDER: { scene: Scene; ms: number }[] = [
   { scene: 'sns', ms: 12500 },
   { scene: 'black', ms: 1500 },
   { scene: 'booth', ms: 4600 },
-  { scene: 'hand', ms: 3200 },
+  { scene: 'hand', ms: 4000 },
   { scene: 'reveal', ms: 2800 },
   { scene: 'final', ms: 0 },
 ]
@@ -523,46 +523,81 @@ function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
   )
 }
 
-/* ===== 特典会ブース（背景で特典会と分かる／1位はシルエット／リアルな手） ===== */
+/* ===== 特典会ブース（“いつもありがとう”と手を差し伸べる／1位はシルエット） ===== */
 function BoothScene({ showHand }: { showHand: boolean }) {
   return (
-    <div className="relative h-full w-full overflow-hidden bg-gradient-to-b from-[#241433] to-[#0a0613]">
-      {/* 特典会の看板 */}
+    <div className="relative h-full w-full overflow-hidden bg-gradient-to-b from-[#2a1840] to-[#0a0613]">
+      {/* 特典会の看板（握手会と明示） */}
       <div className="absolute inset-x-0 top-6 text-center">
-        <span className="rounded-full bg-white/10 px-4 py-1 text-sm font-black tracking-widest shadow">🎫 特典会 MEET&amp;GREET</span>
+        <span className="rounded-full bg-white/12 px-4 py-1 text-sm font-black tracking-widest shadow">🎫 特典会・握手会</span>
       </div>
-      {/* ブースの仕切り（パーテーション）＆ポール */}
-      <div className="absolute left-3 top-[20%] h-[55%] w-1.5 rounded bg-white/15" />
-      <div className="absolute right-3 top-[20%] h-[55%] w-1.5 rounded bg-white/15" />
-      <div className="absolute left-6 top-[42%] h-1 w-[28%] rounded bg-white/15" />
-      <div className="absolute right-6 top-[42%] h-1 w-[28%] rounded bg-white/15" />
+
+      {/* 場面説明（何のシーンか分かるように） */}
+      <div className="absolute inset-x-0 top-[14%] text-center" style={{ animation: 'film-rise 0.7s ease-out both' }}>
+        <p className="text-xs font-bold tracking-widest text-amber-200">
+          {showHand ? '推しが、まっすぐ手を差し伸べた──' : '今月いちばん応援してくれた“No.1 FAN”との特典会'}
+        </p>
+      </div>
+
+      {/* ブースの仕切り（パーテーション） */}
+      <div className="absolute left-3 top-[24%] h-[50%] w-1.5 rounded bg-white/15" />
+      <div className="absolute right-3 top-[24%] h-[50%] w-1.5 rounded bg-white/15" />
       {/* ぼかした客席 */}
-      <div className="absolute inset-0 opacity-30 blur-md">
-        <PenlightSea count={22} top0={20} top1={55} />
+      <div className="absolute inset-0 opacity-25 blur-md">
+        <PenlightSea count={22} top0={22} top1={52} />
       </div>
 
-      {/* 1位＝黒い人型シルエット（机の向こう・正体は伏せる） */}
-      <div className="absolute left-1/2 top-[24%] -translate-x-1/2 text-center">
+      {/* 1位＝黒い人型シルエット（机の向こうで推しと向き合う／正体は伏せる） */}
+      <div className="absolute left-1/2 top-[26%] -translate-x-1/2 text-center">
         <div style={{ animation: 'film-rise 0.8s ease-out both' }}>
-          <Silhouette size={150} />
-          <p className="mt-3 text-sm font-bold tracking-widest opacity-80">？？？</p>
-          <p className="text-[11px] opacity-60">No.1 FAN、来場</p>
+          <Silhouette size={146} />
+          <p className="mt-2 text-sm font-black tracking-widest text-white/90">No.1 FAN</p>
+          <p className="text-[11px] opacity-60">（？？？）</p>
         </div>
       </div>
 
-      {/* 机（テーブルクロス） */}
-      <div className="absolute bottom-0 left-0 h-[26%] w-full bg-gradient-to-b from-[#4a2e63] to-[#1a0f2a]">
+      {/* 机（テーブルクロス）＝特典会ブースの机 */}
+      <div className="absolute bottom-0 left-0 h-[24%] w-full bg-gradient-to-b from-[#4a2e63] to-[#1a0f2a]">
         <div className="h-2 w-full bg-white/15" />
-        <div className="absolute -top-3 left-1/2 h-3 w-40 -translate-x-1/2 rounded-t-md bg-white/10" />
+        <div className="absolute -top-3 left-1/2 h-3 w-44 -translate-x-1/2 rounded-t-md bg-white/10" />
       </div>
 
-      {/* 下から伸びるリアルな手（握手直前で停止） */}
+      {/* “いつもありがとう”と差し伸べる手 */}
       {showHand && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
-          <div style={{ animation: 'film-hand-rise 1.7s cubic-bezier(0.2,0.8,0.2,1) both' }}>
-            <ReachHand />
+        <>
+          {/* セリフ吹き出し（推しの感謝） */}
+          <div
+            className="absolute left-1/2 top-[52%] z-20 -translate-x-1/2"
+            style={{ animation: 'film-rise 0.6s ease-out 0.5s both' }}
+          >
+            <div className="relative rounded-2xl bg-white px-5 py-2.5 text-center text-[#3a1d4f] shadow-card">
+              <p className="text-base font-black">いつも応援、ありがとう<span className="text-oshi-pink">♡</span></p>
+              {/* 吹き出しのしっぽ */}
+              <div className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-white" />
+            </div>
           </div>
-        </div>
+
+          {/* 温かい光 */}
+          <div className="pointer-events-none absolute bottom-[2%] left-1/2 h-44 w-44 -translate-x-1/2 rounded-full bg-amber-200/25 blur-2xl" />
+
+          {/* 下から差し伸べる手（握手直前で停止） */}
+          <div className="absolute bottom-0 left-1/2 z-10 -translate-x-1/2">
+            <div style={{ animation: 'film-hand-rise 1.6s cubic-bezier(0.2,0.8,0.2,1) both' }}>
+              <ReachHand />
+            </div>
+          </div>
+
+          {/* ふわっと舞うハート */}
+          {Array.from({ length: 5 }).map((_, i) => (
+            <span
+              key={i}
+              className="pointer-events-none absolute text-lg"
+              style={{ left: `${40 + i * 5}%`, top: `${60 + rnd(i, 81) * 10}%`, animation: `film-shimmer ${1.6 + rnd(i, 82)}s ease-out ${0.8 + i * 0.25}s infinite` }}
+            >
+              💕
+            </span>
+          ))}
+        </>
       )}
     </div>
   )
