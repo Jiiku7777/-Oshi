@@ -523,10 +523,6 @@ function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
               })}
             </div>
           </div>
-          {/* タップする手（人差し指で） */}
-          <div className="absolute -bottom-7 right-0" style={{ animation: 'film-float-y 1.4s ease-in-out infinite' }}>
-            <TapHand />
-          </div>
         </div>
       </div>
       <p className="absolute bottom-4 left-0 right-0 text-center text-sm font-black text-oshi-pink drop-shadow">
@@ -536,14 +532,22 @@ function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
   )
 }
 
-/* 派手ないいね（大きいハート＋飛び散るミニハート＋リング） */
+/* タップ→その場所にハートが付く派手ないいね（タップ手＋大ハート＋飛び散るミニハート＋リング） */
 function HeartLike({ delay }: { delay: number }) {
   return (
     <span className="relative inline-flex h-5 w-5 items-center justify-center">
+      {/* タップする手（指先でトンッ→ハートが付く） */}
+      <span className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2">
+        <span className="block" style={{ animation: `film-tap 1s ease-out ${delay - 0.4}s both` }}>
+          <TapHand size={30} />
+        </span>
+      </span>
+      {/* 光の輪 */}
       <span
         className="absolute h-7 w-7 rounded-full"
         style={{ background: 'radial-gradient(circle,#ff6fb0cc,transparent 70%)', animation: `film-burst 0.9s ease-out ${delay}s both` }}
       />
+      {/* 飛び散るミニハート */}
       {[-55, -25, 0, 25, 55].map((a, k) => (
         <span key={k} className="absolute" style={{ transform: `rotate(${a}deg)` }}>
           <span className="block text-[10px]" style={{ animation: `film-heart-burst 0.9s ease-out ${delay + 0.05 + k * 0.02}s both` }}>
@@ -551,6 +555,7 @@ function HeartLike({ delay }: { delay: number }) {
           </span>
         </span>
       ))}
+      {/* タップした場所に付く大きいハート */}
       <span className="relative text-lg" style={{ animation: `film-heart-pop 0.6s cubic-bezier(0.2,1.6,0.3,1) ${delay}s both` }}>
         ❤️
       </span>
@@ -923,32 +928,29 @@ function TwoHandReach() {
   )
 }
 
-function TapHand() {
-  // 人差し指でタップする手。親指を横にはっきり出し、人差し指を斜めにして
-  // 「指差し（ポインティング）」だと一目で分かる形に（不謹慎な見え方を回避）。
+function TapHand({ size = 96 }: { size?: number }) {
+  // 参考アイコンの「タップ操作」ハンド：太い黒アウトライン＋クリーム塗り、
+  // 人差し指を立て、親指を横に出し、折った指のこぶし。指先にタップの線。
+  const stroke = '#241a17'
+  const fill = '#FCE7D1'
   return (
-    <svg width="96" height="128" viewBox="0 0 120 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="skin2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#FAD7B8" />
-          <stop offset="1" stopColor="#E0A57B" />
-        </linearGradient>
-      </defs>
-      {/* 袖 */}
-      <rect x="40" y="120" width="52" height="30" rx="14" fill="#6d5bd0" />
-      {/* 手の甲（こぶし） */}
-      <rect x="40" y="62" width="52" height="62" rx="22" fill="url(#skin2)" />
-      {/* 折った指の関節（甲のしわ） */}
-      <g fill="#00000012">
-        <rect x="46" y="70" width="40" height="3" rx="1.5" />
-        <rect x="46" y="82" width="40" height="3" rx="1.5" />
-        <rect x="46" y="94" width="40" height="3" rx="1.5" />
+    <svg width={size} viewBox="0 0 130 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke={stroke} strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round">
+        {/* タップの線（指先の上） */}
+        <path d="M42 16 L33 5" />
+        <path d="M55 11 L55 1" />
+        <path d="M68 16 L77 6" />
+        {/* こぶし（手の甲） */}
+        <rect x="46" y="66" width="60" height="60" rx="26" fill={fill} />
+        {/* 折った指のふくらみ（右上） */}
+        <rect x="66" y="52" width="20" height="28" rx="10" fill={fill} />
+        <rect x="82" y="56" width="20" height="28" rx="10" fill={fill} />
+        <rect x="97" y="62" width="18" height="26" rx="9" fill={fill} />
+        {/* 親指（左下に突き出す） */}
+        <rect x="26" y="82" width="17" height="42" rx="8.5" fill={fill} transform="rotate(-42 34 96)" />
+        {/* 人差し指（立てる） */}
+        <rect x="44" y="20" width="20" height="62" rx="10" fill={fill} transform="rotate(-10 54 80)" />
       </g>
-      {/* 親指（右側にはっきり突き出す） */}
-      <rect x="84" y="70" width="15" height="40" rx="7.5" fill="url(#skin2)" transform="rotate(38 90 90)" />
-      {/* 人差し指（左寄り・斜め上を指す） */}
-      <rect x="44" y="8" width="17" height="66" rx="8.5" fill="url(#skin2)" transform="rotate(-13 52 72)" />
-      <rect x="47" y="12" width="11" height="12" rx="5" fill="#FBE6D6" transform="rotate(-13 52 18)" />
     </svg>
   )
 }
