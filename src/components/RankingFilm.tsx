@@ -478,44 +478,83 @@ function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
         <div className="relative w-full max-w-[300px]" style={{ animation: 'film-rise 0.7s ease-out both' }}>
           <p className="mb-2 text-center text-xs font-bold tracking-widest opacity-70">― おうちでエゴサ中 ―</p>
           <div className="rounded-[2rem] border-4 border-white/15 bg-[#0c0a14] p-3 shadow-2xl">
-            <p className="mb-2 px-1 text-[13px] font-bold text-sky-300">🔍 推しの名前で検索…</p>
+            <p className="mb-2 px-1 text-[12px] font-bold text-sky-300">🔍 推しの名前で検索…</p>
             <div className="space-y-2">
-              {top5.map((f, i) => (
-                <div
-                  key={f.uid}
-                  className="flex items-start gap-2 rounded-2xl bg-white/[0.06] p-2.5"
-                  style={{ animation: `film-rise 0.5s ease-out ${0.3 + i * 0.4}s both` }}
-                >
-                  <Avatar src={f.avatar} name={f.name} size={34} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-bold">
-                      {f.name} <span className="font-normal opacity-50">@fan{i + 1}</span>
-                    </p>
-                    <p className="text-[11px] leading-snug opacity-90">{TWEETS[i % TWEETS.length]}</p>
-                    <div className="mt-1 flex items-center gap-1 text-[11px] opacity-70">
-                      <span className="relative inline-flex h-4 w-4 items-center justify-center">
-                        <span>🤍</span>
-                        {i < 3 && (
-                          <span className="absolute inset-0 flex items-center justify-center" style={{ animation: `film-heart-pop 0.6s ease-out ${3 + i * 1.4}s both` }}>
-                            ❤️
-                          </span>
-                        )}
+              {top5.map((f, i) => {
+                const liked = i < 3 // 上位3人に推しがいいね
+                const delay = 2.6 + i * 1.5
+                return (
+                  <div key={f.uid} style={{ animation: `film-rise 0.5s ease-out ${0.3 + i * 0.35}s both` }}>
+                    <div
+                      className={`relative flex items-start gap-2 rounded-2xl p-2.5 ${liked ? 'bg-oshi-pink/15 ring-1 ring-oshi-pink/40' : 'bg-white/[0.05]'}`}
+                      style={liked ? { animation: `film-like-glow 1.3s ease-out ${delay}s both` } : undefined}
+                    >
+                      {/* 順位バッジ */}
+                      <span
+                        className={`absolute -left-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black shadow ${
+                          i === 0 ? 'bg-amber-300 text-amber-900' : i === 1 ? 'bg-slate-200 text-slate-700' : i === 2 ? 'bg-orange-300 text-orange-900' : 'bg-white/20 text-white'
+                        }`}
+                      >
+                        {i + 1}
                       </span>
-                      <span>♻ {3 + i}</span>
+                      <Avatar src={f.avatar} name={f.name} size={34} />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-bold">
+                          {f.name} <span className="font-normal opacity-50">@fan{i + 1}</span>
+                        </p>
+                        <p className="text-[11px] leading-snug opacity-90">{TWEETS[i % TWEETS.length]}</p>
+                        <div className="mt-1 flex items-center gap-2 text-[11px] opacity-80">
+                          {liked ? <HeartLike delay={delay} /> : <span className="text-white/40">🤍</span>}
+                          <span className="opacity-60">♻ {3 + i}</span>
+                        </div>
+                      </div>
+                      {/* 「推しが♡」スタンプ（上位3人） */}
+                      {liked && (
+                        <span
+                          className="absolute -right-1 top-1 rounded-full bg-oshi-pink px-2 py-0.5 text-[10px] font-black text-white shadow"
+                          style={{ animation: `film-stamp-in 0.5s ease-out ${delay + 0.1}s both` }}
+                        >
+                          推しが♡
+                        </span>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
-          {/* リアルな指（下からタップ） */}
-          <div className="absolute -bottom-6 right-2" style={{ animation: 'film-float-y 1.6s ease-in-out infinite' }}>
+          {/* タップする手（人差し指で） */}
+          <div className="absolute -bottom-7 right-0" style={{ animation: 'film-float-y 1.4s ease-in-out infinite' }}>
             <TapHand />
           </div>
         </div>
       </div>
-      <p className="absolute bottom-5 left-0 right-0 text-center text-xs font-bold opacity-80">上位3名に、推しが「いいね」した…！</p>
+      <p className="absolute bottom-4 left-0 right-0 text-center text-sm font-black text-oshi-pink drop-shadow">
+        推しが「いいね♡」したのは…上位3人！
+      </p>
     </div>
+  )
+}
+
+/* 派手ないいね（大きいハート＋飛び散るミニハート＋リング） */
+function HeartLike({ delay }: { delay: number }) {
+  return (
+    <span className="relative inline-flex h-5 w-5 items-center justify-center">
+      <span
+        className="absolute h-7 w-7 rounded-full"
+        style={{ background: 'radial-gradient(circle,#ff6fb0cc,transparent 70%)', animation: `film-burst 0.9s ease-out ${delay}s both` }}
+      />
+      {[-55, -25, 0, 25, 55].map((a, k) => (
+        <span key={k} className="absolute" style={{ transform: `rotate(${a}deg)` }}>
+          <span className="block text-[10px]" style={{ animation: `film-heart-burst 0.9s ease-out ${delay + 0.05 + k * 0.02}s both` }}>
+            💕
+          </span>
+        </span>
+      ))}
+      <span className="relative text-lg" style={{ animation: `film-heart-pop 0.6s cubic-bezier(0.2,1.6,0.3,1) ${delay}s both` }}>
+        ❤️
+      </span>
+    </span>
   )
 }
 
@@ -885,28 +924,31 @@ function TwoHandReach() {
 }
 
 function TapHand() {
-  // 人差し指を立ててタップする手（こぶし＋立てた指）
+  // 人差し指でタップする手。親指を横にはっきり出し、人差し指を斜めにして
+  // 「指差し（ポインティング）」だと一目で分かる形に（不謹慎な見え方を回避）。
   return (
-    <svg width="96" height="128" viewBox="0 0 110 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="96" height="128" viewBox="0 0 120 150" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="skin2" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#FAD7B8" />
           <stop offset="1" stopColor="#E0A57B" />
         </linearGradient>
       </defs>
-      <rect x="26" y="116" width="56" height="34" rx="14" fill="#6d5bd0" />
-      {/* こぶし */}
-      <rect x="26" y="66" width="58" height="58" rx="22" fill="url(#skin2)" />
-      {/* 折った指のふくらみ */}
+      {/* 袖 */}
+      <rect x="40" y="120" width="52" height="30" rx="14" fill="#6d5bd0" />
+      {/* 手の甲（こぶし） */}
+      <rect x="40" y="62" width="52" height="62" rx="22" fill="url(#skin2)" />
+      {/* 折った指の関節（甲のしわ） */}
       <g fill="#00000012">
-        <rect x="32" y="70" width="46" height="3" rx="1.5" />
-        <rect x="32" y="84" width="46" height="3" rx="1.5" />
+        <rect x="46" y="70" width="40" height="3" rx="1.5" />
+        <rect x="46" y="82" width="40" height="3" rx="1.5" />
+        <rect x="46" y="94" width="40" height="3" rx="1.5" />
       </g>
-      {/* 立てた人差し指 */}
-      <rect x="44" y="12" width="18" height="66" rx="9" fill="url(#skin2)" />
-      <rect x="48" y="16" width="11" height="12" rx="5" fill="#FBE6D6" />
-      {/* 親指 */}
-      <rect x="20" y="80" width="16" height="34" rx="8" fill="url(#skin2)" transform="rotate(-32 28 92)" />
+      {/* 親指（右側にはっきり突き出す） */}
+      <rect x="84" y="70" width="15" height="40" rx="7.5" fill="url(#skin2)" transform="rotate(38 90 90)" />
+      {/* 人差し指（左寄り・斜め上を指す） */}
+      <rect x="44" y="8" width="17" height="66" rx="8.5" fill="url(#skin2)" transform="rotate(-13 52 72)" />
+      <rect x="47" y="12" width="11" height="12" rx="5" fill="#FBE6D6" transform="rotate(-13 52 18)" />
     </svg>
   )
 }
