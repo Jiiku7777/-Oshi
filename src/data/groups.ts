@@ -18,6 +18,24 @@ export const GROUPS: Group[] = [
   { id: 'hinatazaka46', name: '日向坂46', color: '#8FD3FF', reading: 'ひなたざかフォーティーシックス' },
 ]
 
+// グループごとの固有マーク。色が似ていても（ピンク系が多い）一目で見分けられるように。
+const GROUP_EMOJI: Record<string, string> = {
+  'fruits-zipper': '🍓',
+  'cutie-street': '🎀',
+  'candy-tune': '🍬',
+  'sweet-steady': '🍯',
+  'equal-love': '💙',
+  'not-equal-me': '💜',
+  'nearly-equal-joy': '🍀',
+  'nogizaka46': '🐐',
+  'sakurazaka46': '🌸',
+  'hinatazaka46': '☀️',
+}
+
+export function getGroupEmoji(id: string): string {
+  return GROUP_EMOJI[id] ?? '⭐'
+}
+
 const groupMap = new Map(GROUPS.map((g) => [g.id, g]))
 
 export function getGroups(): Group[] {

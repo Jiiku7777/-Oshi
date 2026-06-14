@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import type { OshiEvent } from '@/types'
-import { getGroup } from '@/data/groups'
+import { getGroup, getGroupEmoji } from '@/data/groups'
 import { CategoryBadge } from './CategoryBadge'
 import { formatTime, formatDateShort } from '@/utils/date'
 
@@ -25,11 +25,12 @@ export function EventCard({ event, emphasizeTime, showDate }: Props) {
     >
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center gap-2">
-          {/* グループカラーの名前チップ（ひと目で推しが分かる） */}
+          {/* グループ固有の絵文字＋カラー名前チップ（色が似ていても見分けられる） */}
           <span
-            className="shrink-0 truncate rounded-full px-2.5 py-0.5 text-[11px] font-extrabold text-white"
+            className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold text-white"
             style={{ backgroundColor: color, textShadow: '0 1px 2px rgba(0,0,0,0.35)' }}
           >
+            <span aria-hidden>{getGroupEmoji(event.groupId)}</span>
             {group?.name}
           </span>
           <CategoryBadge category={event.category} />
