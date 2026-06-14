@@ -171,8 +171,9 @@ export function RankingFilm({
   }
 
   return (
+    <div className="fixed inset-0 z-[60] flex items-stretch justify-center bg-black">
     <div
-      className="fixed inset-0 z-[60] overflow-hidden bg-black text-white"
+      className="relative mx-auto h-full w-full max-w-[460px] overflow-hidden text-white"
       onClick={scene === 'final' ? undefined : advance}
     >
       {/* ミュート */}
@@ -222,6 +223,7 @@ export function RankingFilm({
           ))}
         </div>
       )}
+    </div>
     </div>
   )
 }
@@ -467,17 +469,11 @@ function LabelScene({ text, sub }: { text: string; sub?: string }) {
   )
 }
 
-/* ===== SNSエゴサ（家でスマホ・TOP5・上位3にハート長め） ===== */
+/* ===== SNSエゴサ（アイドルの家でスマホ・TOP5・上位3にハート長め） ===== */
 function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
   return (
     <div className="relative h-full w-full overflow-hidden">
-      {/* 家の部屋（夜・暖色ランプ） */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#3a2a3f] via-[#241a2c] to-[#120c18]" />
-      <div className="absolute right-[-10%] top-[-5%] h-64 w-64 rounded-full bg-amber-300/25 blur-3xl" /> {/* ランプの光 */}
-      <div className="absolute left-6 top-10 h-20 w-14 rounded-md border border-white/10 bg-white/5" /> {/* 壁のポスター */}
-      <div className="absolute left-7 top-12 text-[10px] opacity-30">★LIVE★</div>
-      <div className="absolute bottom-0 left-0 h-[22%] w-full bg-gradient-to-t from-[#2a1f33] to-transparent" /> {/* ベッド/ソファ */}
-
+      <HomeRoom />
       <div className="relative flex h-full w-full items-center justify-center px-4">
         <div className="relative w-full max-w-[300px]" style={{ animation: 'film-rise 0.7s ease-out both' }}>
           <p className="mb-2 text-center text-xs font-bold tracking-widest opacity-70">― おうちでエゴサ中 ―</p>
@@ -519,6 +515,47 @@ function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
         </div>
       </div>
       <p className="absolute bottom-5 left-0 right-0 text-center text-xs font-bold opacity-80">上位3名に、推しが「いいね」した…！</p>
+    </div>
+  )
+}
+
+/* アイドルの家（夜の部屋）の背景 */
+function HomeRoom() {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* 壁 */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,#3b2b46 0%,#2a1f38 55%,#1a1226 100%)' }} />
+      {/* ランプの暖かい光 */}
+      <div className="absolute -right-10 top-0 h-44 w-44 rounded-full bg-amber-300/25 blur-3xl" />
+
+      {/* 窓（夜空＋月＋星） */}
+      <div className="absolute left-4 top-7 h-28 w-24 overflow-hidden rounded-md border-4 border-[#5b4a6b]" style={{ background: 'linear-gradient(180deg,#1b2c52,#0e1730)' }}>
+        <div className="absolute right-2 top-2 h-7 w-7 rounded-full bg-[#f5e6b8]" style={{ boxShadow: '0 0 10px 2px #f5e6b8aa' }} />
+        {Array.from({ length: 7 }).map((_, i) => (
+          <span key={i} className="absolute h-[3px] w-[3px] rounded-full bg-white" style={{ left: `${10 + rnd(i, 91) * 70}%`, top: `${30 + rnd(i, 92) * 60}%`, animation: `film-twinkle ${1 + rnd(i, 93)}s ease-in-out ${rnd(i, 94)}s infinite` }} />
+        ))}
+        <div className="absolute left-1/2 top-0 h-full w-[3px] -translate-x-1/2 bg-[#5b4a6b]" />
+        <div className="absolute left-0 top-1/2 h-[3px] w-full -translate-y-1/2 bg-[#5b4a6b]" />
+      </div>
+
+      {/* フェアリーライト（上部） */}
+      <div className="absolute inset-x-0 top-1 flex justify-around px-3">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <span key={i} className="h-1.5 w-1.5 rounded-full" style={{ background: '#ffd98a', boxShadow: '0 0 6px 2px #ffd98a', animation: `film-twinkle ${1 + rnd(i, 95)}s ease-in-out ${rnd(i, 96)}s infinite` }} />
+        ))}
+      </div>
+
+      {/* 推しのポスター */}
+      <div className="absolute right-4 top-9 flex h-24 w-16 items-center justify-center rounded-sm border-2 border-white/20 text-xl" style={{ background: 'linear-gradient(180deg,#7e5bff,#ff8fb1)' }}>♡</div>
+      <div className="absolute right-24 top-12 flex h-16 w-12 items-center justify-center rounded-sm border-2 border-white/15 bg-[#2a2036] text-[9px] text-white/60">LIVE</div>
+
+      {/* ベッド（ヘッドボード＋枕＋ぬいぐるみ＋ペンライト） */}
+      <div className="absolute bottom-0 left-0 h-[26%] w-full" style={{ background: 'linear-gradient(180deg,#3a2740,#241830)' }}>
+        <div className="absolute -top-2 left-0 h-3 w-full rounded-t-xl bg-[#4a3358]" />
+        <div className="absolute top-3 left-5 h-8 w-16 rounded-lg bg-[#efe3f5]" />
+        <div className="absolute right-6 top-1 text-3xl">🧸</div>
+        <div className="absolute right-24 top-4 h-7 w-2 rotate-12 rounded-full" style={{ background: '#8FD3FF', boxShadow: '0 0 8px 2px #8FD3FF' }} />
+      </div>
     </div>
   )
 }
