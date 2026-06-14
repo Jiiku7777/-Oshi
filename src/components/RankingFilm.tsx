@@ -476,7 +476,9 @@ function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
       <HomeRoom />
       <div className="relative flex h-full w-full items-center justify-center px-4">
         <div className="relative w-full max-w-[300px]" style={{ animation: 'film-rise 0.7s ease-out both' }}>
-          <p className="mb-2 text-center text-xs font-bold tracking-widest opacity-70">― おうちでエゴサ中 ―</p>
+          <div className="mb-2 text-center">
+            <span className="rounded-full bg-black/55 px-3 py-1 text-xs font-bold tracking-widest text-white/90 backdrop-blur">― おうちでエゴサ中 ―</span>
+          </div>
           <div className="rounded-[2rem] border-4 border-white/15 bg-[#0c0a14] p-3 shadow-2xl">
             <p className="mb-2 px-1 text-[12px] font-bold text-sky-300">🔍 推しの名前で検索…</p>
             <div className="space-y-2">
@@ -525,9 +527,11 @@ function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
           </div>
         </div>
       </div>
-      <p className="absolute bottom-4 left-0 right-0 text-center text-sm font-black text-oshi-pink drop-shadow">
-        推しが「いいね♡」したのは…上位3人！
-      </p>
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap">
+        <span className="rounded-full bg-black/75 px-4 py-2 text-sm font-black text-white shadow-card ring-1 ring-oshi-pink/70 backdrop-blur">
+          💗 推しが「いいね」したのは…<span className="text-oshi-pink">上位3人！</span>
+        </span>
+      </div>
     </div>
   )
 }
