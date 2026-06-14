@@ -12,10 +12,22 @@ interface Props {
   showDate?: boolean
 }
 
+/** hex を暗くした rgb を返す（薄い色でも白文字が読めるように） */
+function darken(hex: string, f = 0.42): string {
+  const m = hex.replace('#', '')
+  const full = m.length === 3 ? m.split('').map((c) => c + c).join('') : m
+  const n = parseInt(full, 16)
+  const r = Math.round(((n >> 16) & 255) * (1 - f))
+  const g = Math.round(((n >> 8) & 255) * (1 - f))
+  const b = Math.round((n & 255) * (1 - f))
+  return `rgb(${r}, ${g}, ${b})`
+}
+
 export function EventCard({ event, emphasizeTime, showDate }: Props) {
   const navigate = useNavigate()
   const group = getGroup(event.groupId)
   const color = group?.color ?? '#FF8FB1'
+  const chipBg = darken(color)
 
   return (
     <button
@@ -28,7 +40,7 @@ export function EventCard({ event, emphasizeTime, showDate }: Props) {
           {/* グループ固有の絵文字＋カラー名前チップ（色が似ていても見分けられる） */}
           <span
             className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold text-white"
-            style={{ backgroundColor: color, textShadow: '0 1px 2px rgba(0,0,0,0.35)' }}
+            style={{ backgroundColor: chipBg }}
           >
             <span aria-hidden>{getGroupEmoji(event.groupId)}</span>
             {group?.name}
