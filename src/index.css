@@ -29,3 +29,54 @@
     min-height: 100dvh;
   }
 }
+
+/* ===== ランキング発表ムービー（RankingFilm）用アニメーション ===== */
+@keyframes film-pen-swing {
+  0% { transform: rotate(-16deg); }
+  50% { transform: rotate(16deg); }
+  100% { transform: rotate(-16deg); }
+}
+@keyframes film-twinkle {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+@keyframes film-avatar-pop {
+  0% { opacity: 0; transform: translateY(14px) scale(0.7); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes film-rise {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes film-hand-rise {
+  0% { transform: translateY(115%); }
+  100% { transform: translateY(8%); }
+}
+@keyframes film-slam {
+  0% { opacity: 0; transform: scale(2.6); filter: blur(14px); }
+  60% { opacity: 1; transform: scale(0.92); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes film-shimmer {
+  0% { opacity: 0; transform: scale(0.4); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+@keyframes film-tape-fall {
+  0% { transform: translateY(-30vh) rotate(0deg); }
+  100% { transform: translateY(115vh) rotate(220deg); }
+}
+@keyframes film-heart-pop {
+  0% { transform: scale(0); opacity: 0; }
+  45% { transform: scale(1.6); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes film-glow-pulse {
+  0%, 100% { box-shadow: 0 0 30px 6px rgba(255, 255, 255, 0.5); }
+  50% { box-shadow: 0 0 55px 16px rgba(255, 255, 255, 0.85); }
+}
+@keyframes film-float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.film-fade { transition: opacity 1.2s ease; }

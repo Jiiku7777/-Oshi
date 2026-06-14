@@ -16,6 +16,7 @@ import { Seo } from '@/components/Seo'
 import { Avatar } from '@/components/Avatar'
 import { FanDetailModal } from '@/components/FanDetailModal'
 import { RecapReveal } from '@/components/RecapReveal'
+import { RankingFilm } from '@/components/RankingFilm'
 
 type Period = 'month' | 'all'
 
@@ -30,6 +31,7 @@ export function Ranking() {
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<LeaderEntry | null>(null)
   const [recap, setRecap] = useState<{ entries: LeaderEntry[]; label: string; sample: boolean } | null>(null)
+  const [film, setFilm] = useState<{ entries: LeaderEntry[]; monthKey: string } | null>(null)
 
   const thisMonth = currentMonthKey()
   const lastMonth = prevMonthKey()
@@ -76,6 +78,12 @@ export function Ranking() {
     })
   }
 
+  // No.1 FAN 発表ムービー（総合・先月の最終結果）
+  const showFilm = async () => {
+    const real = await fetchMonthlyTop(lastMonth, 'all', 30)
+    setFilm({ entries: real, monthKey: lastMonth })
+  }
+
   const scopeLabel = scope === 'all' ? '総合' : getGroupName(scope)
 
   return (
@@ -104,6 +112,22 @@ export function Ranking() {
         {oshiIds.map((id) => (
           <ScopeChip key={id} label={getGroupName(id)} active={scope === id} onClick={() => setScope(id)} />
         ))}
+      </div>
+
+      {/* No.1 FAN 発表ムービー */}
+      <div className="px-5 pb-2">
+        <button
+          onClick={showFilm}
+          className="relative flex w-full items-center justify-between overflow-hidden rounded-card bg-gradient-to-br from-[#2a1640] via-oshi-purple to-oshi-pink p-4 text-white shadow-card active:scale-[0.98]"
+        >
+          <span className="relative">
+            <span className="block text-base font-black">🎬 No.1 FAN 発表ムービー</span>
+            <span className="block text-xs opacity-90">
+              {monthLabel(lastMonth)}・総合の頂点を映画みたいに発表
+            </span>
+          </span>
+          <span className="relative text-2xl">▶</span>
+        </button>
       </div>
 
       {/* 先月の結果を見る */}
@@ -174,6 +198,9 @@ export function Ranking() {
           sample={recap.sample}
           onClose={() => setRecap(null)}
         />
+      )}
+      {film && (
+        <RankingFilm monthKey={film.monthKey} entries={film.entries} onClose={() => setFilm(null)} />
       )}
     </div>
   )
