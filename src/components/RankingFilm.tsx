@@ -135,7 +135,7 @@ export function RankingFilm({
       case 'booth': a.cheer(false); a.chord('tension'); a.intensity(0); break
       case 'hand': a.chord('tension'); a.intensity(1); break
       case 'reveal': a.sparkle(); imp = window.setTimeout(() => a.impact(), 850); break
-      case 'final': a.triumph(); a.cheer(true); break
+      case 'final': a.impact(); a.triumph(); a.cheer(true); break
     }
     return () => { if (imp) window.clearTimeout(imp) }
   }, [scene])
@@ -568,24 +568,57 @@ function BoothScene({ showHand }: { showHand: boolean }) {
   )
 }
 
-/* ===== ほわほわ→だーん→No.1 FAN ===== */
+/* ===== ほわほわ→だーん→No.1 FAN（クライマックス・最大級） ===== */
 function RevealScene() {
   return (
-    <div className="relative flex h-full w-full items-center justify-center bg-black">
-      {Array.from({ length: 18 }).map((_, i) => (
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black">
+      {/* 放射状の光線（回転）＋インパクトで広がる光の輪 */}
+      <Sunburst className="left-1/2 top-1/2 h-[160vmax] w-[160vmax] -translate-x-1/2 -translate-y-1/2 opacity-60" delay={0.9} />
+      <div
+        className="absolute left-1/2 top-1/2 h-[60vmax] w-[60vmax] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(255,211,110,0.5) 0%, transparent 60%)', animation: 'film-burst 1s ease-out 0.85s both' }}
+      />
+      {/* 白フラッシュ（だーんの瞬間） */}
+      <div className="pointer-events-none absolute inset-0 bg-white" style={{ animation: 'film-flash 0.9s ease-out 0.85s both' }} />
+
+      {/* ほわほわ */}
+      {Array.from({ length: 26 }).map((_, i) => (
         <span
           key={i}
           className="absolute text-2xl"
-          style={{ left: `${10 + rnd(i, 21) * 80}%`, top: `${20 + rnd(i, 22) * 60}%`, animation: `film-shimmer 1.2s ease-out ${rnd(i, 23) * 0.8}s both` }}
+          style={{ left: `${6 + rnd(i, 21) * 88}%`, top: `${14 + rnd(i, 22) * 72}%`, animation: `film-shimmer 1.2s ease-out ${rnd(i, 23) * 0.85}s both` }}
         >
           ✨
         </span>
       ))}
-      <div className="text-center" style={{ animation: 'film-slam 0.9s cubic-bezier(0.2,1.4,0.3,1) 0.9s both' }}>
-        <p className="text-2xl font-black tracking-widest text-oshi-pink">👑</p>
-        <p className="text-7xl font-black tracking-tighter drop-shadow-[0_3px_18px_rgba(255,143,177,0.8)]">No.1 FAN</p>
+
+      {/* だーん */}
+      <div className="relative text-center" style={{ animation: 'film-slam 0.9s cubic-bezier(0.2,1.4,0.3,1) 0.9s both' }}>
+        <p className="text-4xl font-black tracking-widest drop-shadow">👑</p>
+        <p
+          className="text-7xl font-black tracking-tighter drop-shadow-[0_3px_22px_rgba(255,211,110,0.9)]"
+          style={{ background: 'linear-gradient(180deg,#FFF1B8,#FFD36E,#FF8FB1)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}
+        >
+          No.1 FAN
+        </p>
       </div>
     </div>
+  )
+}
+
+/* 放射状サンバースト（回転する光線） */
+function Sunburst({ className = '', delay = 0 }: { className?: string; delay?: number }) {
+  return (
+    <div
+      className={`pointer-events-none absolute ${className}`}
+      style={{
+        background:
+          'repeating-conic-gradient(from 0deg, rgba(255,211,110,0.22) 0deg 7deg, transparent 7deg 15deg)',
+        WebkitMaskImage: 'radial-gradient(circle, #000 12%, transparent 62%)',
+        maskImage: 'radial-gradient(circle, #000 12%, transparent 62%)',
+        animation: `film-spin 16s linear infinite, film-rise 0.8s ease-out ${delay}s both`,
+      }}
+    />
   )
 }
 
@@ -601,11 +634,37 @@ function FinalScene({
   onClose: () => void
 }) {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center px-5">
+    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden px-5">
+      {/* 全画面の祝祭バックドロップ（最大級の盛り上がり） */}
+      <div className="absolute inset-0" style={{ background: 'radial-gradient(120% 90% at 50% 50%, #4a1d6e 0%, #1a0f2a 55%, #050309 100%)' }} />
+      <Sunburst className="left-1/2 top-[34%] h-[150vmax] w-[150vmax] -translate-x-1/2 -translate-y-1/2 opacity-40" />
+      {/* 客席のペンライト（歓声の callback） */}
+      <div className="absolute bottom-0 left-0 h-[34%] w-full opacity-80">
+        <PenlightSea count={40} top0={20} top1={92} />
+      </div>
+      {/* 全画面テープ＆金紙吹雪＆花火スパーク */}
+      {Array.from({ length: 22 }).map((_, i) => (
+        <span
+          key={`t${i}`}
+          className="pointer-events-none absolute top-0 h-3 w-1.5 rounded-sm"
+          style={{ left: `${3 + rnd(i, 61) * 94}%`, background: PEN_COLORS[i % PEN_COLORS.length], opacity: 0.85, animation: `film-tape-fall ${2.6 + rnd(i, 62) * 2}s linear ${rnd(i, 63) * 1.6}s infinite` }}
+        />
+      ))}
+      {Array.from({ length: 16 }).map((_, i) => (
+        <span
+          key={`s${i}`}
+          className="pointer-events-none absolute text-lg"
+          style={{ left: `${6 + rnd(i, 71) * 88}%`, top: `${10 + rnd(i, 72) * 70}%`, animation: `film-shimmer ${1.4 + rnd(i, 73)}s ease-out ${rnd(i, 74) * 2}s infinite` }}
+        >
+          ✨
+        </span>
+      ))}
+
+      {/* 撮影対象カード */}
       <div
         ref={finalRef}
-        className="relative w-full max-w-sm overflow-hidden rounded-3xl bg-gradient-to-br from-[#2a1640] via-[#3a1d4f] to-[#1a0f2a] p-6 text-center"
-        style={{ animation: 'film-rise 0.8s ease-out both' }}
+        className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-amber-200/30 bg-gradient-to-br from-[#2a1640] via-[#3a1d4f] to-[#1a0f2a] p-6 text-center shadow-[0_0_50px_8px_rgba(255,211,110,0.25)]"
+        style={{ animation: 'film-slam 0.8s cubic-bezier(0.2,1.3,0.3,1) both' }}
       >
         {Array.from({ length: 14 }).map((_, i) => (
           <span
@@ -614,12 +673,17 @@ function FinalScene({
             style={{ left: `${5 + rnd(i, 31) * 90}%`, background: PEN_COLORS[i % PEN_COLORS.length], opacity: 0.8, animation: `film-tape-fall ${2.4 + rnd(i, 32) * 1.6}s linear ${rnd(i, 33) * 1.2}s infinite` }}
           />
         ))}
-        <p className="relative text-sm font-bold tracking-widest text-oshi-pink">👑 {monthLabel(monthKey)}</p>
+        <p className="relative text-sm font-bold tracking-widest text-amber-200">👑 {monthLabel(monthKey)}</p>
         <div className="relative mx-auto mt-3 inline-block rounded-full" style={{ animation: 'film-glow-pulse 2s ease-in-out infinite' }}>
-          <Avatar src={no1.avatar} name={no1.name} size={140} ring />
+          <Avatar src={no1.avatar} name={no1.name} size={148} ring />
         </div>
         <p className="relative mt-4 text-4xl font-black drop-shadow">{no1.name}</p>
-        <span className="relative mt-2 inline-block rounded-full bg-white/15 px-4 py-1 text-sm font-extrabold">No.1 FAN</span>
+        <span
+          className="relative mt-2 inline-block rounded-full px-5 py-1 text-base font-black text-[#3a1d4f]"
+          style={{ background: 'linear-gradient(180deg,#FFF1B8,#FFD36E)' }}
+        >
+          No.1 FAN
+        </span>
         <div className="relative mt-4 flex justify-center gap-4 text-sm font-bold">
           <span>🎤 {no1.live}</span>
           <span>🤝 {no1.event}</span>
@@ -628,12 +692,12 @@ function FinalScene({
         <p className="relative mt-4 text-[11px] font-bold opacity-70">#OshiHub ・ oshilink-b8fab.web.app</p>
       </div>
 
-      <div className="mt-5 grid w-full max-w-sm grid-cols-3 gap-2">
+      <div className="relative mt-5 grid w-full max-w-sm grid-cols-3 gap-2">
         <button onClick={onReplay} className="rounded-full bg-white/15 py-3 text-sm font-extrabold backdrop-blur active:scale-95">🔁 もう一度</button>
         <button onClick={onSave} className="rounded-full bg-white py-3 text-sm font-extrabold text-oshi-purple active:scale-95">📸 画像保存</button>
         <button onClick={onClose} className="rounded-full bg-white/15 py-3 text-sm font-extrabold backdrop-blur active:scale-95">閉じる</button>
       </div>
-      <p className="mt-3 text-center text-[11px] opacity-70">画面収録すればショート動画に！来月は君が主役かも🔥</p>
+      <p className="relative mt-3 text-center text-[11px] opacity-70">画面収録すればショート動画に！来月は君が主役かも🔥</p>
     </div>
   )
 }

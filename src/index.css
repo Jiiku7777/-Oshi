@@ -92,4 +92,17 @@
   0%, 100% { opacity: 0.55; }
   50% { opacity: 0.95; }
 }
+@keyframes film-flash {
+  0% { opacity: 0; }
+  8% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes film-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes film-burst {
+  0% { transform: scale(0.2); opacity: 0; }
+  35% { opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
 .film-fade { transition: opacity 1.2s ease; }
