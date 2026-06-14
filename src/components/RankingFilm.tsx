@@ -125,16 +125,16 @@ export function RankingFilm({
     if (!a) return
     let imp: number | undefined
     switch (scene) {
-      case 'intro': a.start(); a.intensity(0); a.chord('base'); break
-      case 'dome': a.start(); a.chord('bright'); a.intensity(2); a.cheer(true); break
-      case 'day2': a.cheer(false); a.intensity(0); break
-      case 'venue': a.chord('bright'); a.intensity(2); a.cheer(true); a.sparkle(); break
-      case 'dark2': a.cheer(false); a.intensity(0); break
-      case 'sns': a.cheer(false); a.chord('base'); a.intensity(1); break
-      case 'black': a.intensity(0); break
-      case 'booth': a.cheer(false); a.chord('tension'); a.intensity(0); break
-      case 'hand': a.chord('tension'); a.intensity(1); break
-      case 'reveal': a.sparkle(); imp = window.setTimeout(() => a.impact(), 850); break
+      case 'intro': a.start(); a.intensity(0); a.chord('base'); a.beat(0); a.sparkle(); break
+      case 'dome': a.start(); a.chord('bright'); a.intensity(2); a.beat(0.4); a.cheer(true); break
+      case 'day2': a.cheer(false); a.beat(0); a.intensity(0); break
+      case 'venue': a.chord('bright'); a.intensity(2); a.beat(0.45); a.cheer(true); a.sparkle(); break
+      case 'dark2': a.cheer(false); a.beat(0); a.intensity(0); break
+      case 'sns': a.cheer(false); a.beat(0.12); a.chord('base'); a.intensity(1); break
+      case 'black': a.beat(0); a.intensity(0); break
+      case 'booth': a.cheer(false); a.beat(0); a.chord('tension'); a.intensity(1); break
+      case 'hand': a.chord('tension'); a.intensity(2); a.riser(3.4); break // ガチャの期待ライザー
+      case 'reveal': a.sparkle(); a.chimeUp(); imp = window.setTimeout(() => a.impact(), 850); break
       case 'final': a.impact(); a.triumph(); a.cheer(true); break
     }
     return () => { if (imp) window.clearTimeout(imp) }
@@ -751,54 +751,79 @@ function IntroScene({ monthKey }: { monthKey: string }) {
   )
 }
 
-/* ===== リアルな手（SVG） ===== */
+/* ===== 手（SVG・なめらかな形） ===== */
 function ReachHand() {
-  // 下から伸びる前腕＋開いた手のひら（握手を求める）
+  // 下から差し伸べる開いた手（指は細め・長さに変化・爪と陰影で自然に）
   return (
-    <svg width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="186" height="250" viewBox="0 0 200 270" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#F4C9A8" />
-          <stop offset="1" stopColor="#D69B74" />
+          <stop offset="0" stopColor="#FAD7B8" />
+          <stop offset="1" stopColor="#E0A57B" />
+        </linearGradient>
+        <linearGradient id="nail" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FBE6D6" />
+          <stop offset="1" stopColor="#F2CDB0" />
         </linearGradient>
       </defs>
-      {/* 袖 */}
-      <rect x="64" y="180" width="72" height="60" rx="14" fill="#2b2540" />
-      {/* 前腕 */}
-      <rect x="78" y="120" width="44" height="80" rx="20" fill="url(#skin)" />
-      {/* 手のひら */}
-      <path d="M62 96c0-22 16-36 38-36s38 14 38 36v30c0 18-14 30-38 30s-38-12-38-30V96z" fill="url(#skin)" />
-      {/* 指4本 */}
-      <rect x="66" y="40" width="14" height="62" rx="7" fill="url(#skin)" />
-      <rect x="84" y="30" width="15" height="72" rx="7.5" fill="url(#skin)" />
-      <rect x="102" y="33" width="15" height="69" rx="7.5" fill="url(#skin)" />
-      <rect x="120" y="44" width="14" height="58" rx="7" fill="url(#skin)" />
-      {/* 親指 */}
-      <rect x="48" y="92" width="13" height="40" rx="6.5" fill="url(#skin)" transform="rotate(-32 54 112)" />
-      {/* 影 */}
-      <path d="M62 110c10 8 26 12 38 12s28-4 38-12v16c0 18-14 30-38 30s-38-12-38-30v-16z" fill="#00000018" />
+      {/* 袖（ニット）＋前腕 */}
+      <rect x="60" y="214" width="84" height="56" rx="18" fill="#6d5bd0" />
+      <rect x="60" y="214" width="84" height="9" rx="4" fill="#7d6de0" />
+      <rect x="80" y="150" width="40" height="78" rx="20" fill="url(#skin)" />
+
+      {/* 指4本（手のひらの後ろに配置して付け根を自然に隠す） */}
+      <g>
+        <rect x="70" y="46" width="18" height="88" rx="9" fill="url(#skin)" transform="rotate(-7 79 128)" />
+        <rect x="91" y="32" width="19" height="100" rx="9.5" fill="url(#skin)" />
+        <rect x="112" y="44" width="18" height="90" rx="9" fill="url(#skin)" transform="rotate(6 121 128)" />
+        <rect x="132" y="64" width="15" height="72" rx="7.5" fill="url(#skin)" transform="rotate(14 139 128)" />
+      </g>
+      {/* 爪 */}
+      <rect x="74" y="50" width="11" height="13" rx="5" fill="url(#nail)" transform="rotate(-7 79 56)" />
+      <rect x="95" y="37" width="12" height="14" rx="6" fill="url(#nail)" />
+      <rect x="116" y="49" width="11" height="13" rx="5" fill="url(#nail)" transform="rotate(6 121 55)" />
+      <rect x="134" y="69" width="10" height="11" rx="5" fill="url(#nail)" transform="rotate(14 139 74)" />
+
+      {/* 手のひら（指の上に重ねてナックルを作る） */}
+      <path d="M58 142c0-18 12-28 42-28s42 10 42 28l-4 40c-2 18-18 28-38 28s-36-10-38-28l-4-40z" fill="url(#skin)" />
+      {/* 親指（手前・横から） */}
+      <rect x="40" y="150" width="20" height="56" rx="10" fill="url(#skin)" transform="rotate(-50 60 162)" />
+      <rect x="44" y="152" width="12" height="13" rx="6" fill="url(#nail)" transform="rotate(-50 56 158)" />
+
+      {/* 指の境目＆手のひらの陰影 */}
+      <g stroke="#00000018" strokeWidth="2" strokeLinecap="round">
+        <path d="M90 126l1 16" />
+        <path d="M110 124l0 16" />
+        <path d="M130 127l-1 15" />
+      </g>
+      <path d="M62 166c10 7 24 11 38 11s28-4 38-11l-3 18c-2 16-17 25-35 25s-33-9-35-25l-3-18z" fill="#0000000f" />
     </svg>
   )
 }
 
 function TapHand() {
-  // 人差し指を立ててタップする手
+  // 人差し指を立ててタップする手（こぶし＋立てた指）
   return (
-    <svg width="92" height="120" viewBox="0 0 92 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="96" height="128" viewBox="0 0 110 150" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="skin2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#F4C9A8" />
-          <stop offset="1" stopColor="#D69B74" />
+          <stop offset="0" stopColor="#FAD7B8" />
+          <stop offset="1" stopColor="#E0A57B" />
         </linearGradient>
       </defs>
-      <rect x="30" y="86" width="44" height="40" rx="12" fill="#2b2540" />
+      <rect x="26" y="116" width="56" height="34" rx="14" fill="#6d5bd0" />
       {/* こぶし */}
-      <rect x="30" y="44" width="44" height="48" rx="18" fill="url(#skin2)" />
-      {/* 人差し指 */}
-      <rect x="40" y="6" width="16" height="52" rx="8" fill="url(#skin2)" />
+      <rect x="26" y="66" width="58" height="58" rx="22" fill="url(#skin2)" />
+      {/* 折った指のふくらみ */}
+      <g fill="#00000012">
+        <rect x="32" y="70" width="46" height="3" rx="1.5" />
+        <rect x="32" y="84" width="46" height="3" rx="1.5" />
+      </g>
+      {/* 立てた人差し指 */}
+      <rect x="44" y="12" width="18" height="66" rx="9" fill="url(#skin2)" />
+      <rect x="48" y="16" width="11" height="12" rx="5" fill="#FBE6D6" />
       {/* 親指 */}
-      <rect x="24" y="58" width="13" height="26" rx="6.5" fill="url(#skin2)" transform="rotate(-28 30 70)" />
-      <path d="M30 70c8 6 36 6 44 0v10c0 10-8 16-22 16s-22-6-22-16V70z" fill="#00000015" />
+      <rect x="20" y="80" width="16" height="34" rx="8" fill="url(#skin2)" transform="rotate(-32 28 92)" />
     </svg>
   )
 }
