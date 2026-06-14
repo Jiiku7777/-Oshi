@@ -114,37 +114,40 @@ export function Ranking() {
         ))}
       </div>
 
-      {/* No.1 FAN 発表ムービー */}
-      <div className="px-5 pb-2">
-        <button
-          onClick={showFilm}
-          className="relative flex w-full items-center justify-between overflow-hidden rounded-card bg-gradient-to-br from-[#2a1640] via-oshi-purple to-oshi-pink p-4 text-white shadow-card active:scale-[0.98]"
-        >
-          <span className="relative">
-            <span className="block text-base font-black">🎬 No.1 FAN 発表ムービー</span>
-            <span className="block text-xs opacity-90">
-              {monthLabel(lastMonth)}・総合の頂点を映画みたいに発表
-            </span>
-          </span>
-          <span className="relative text-2xl">▶</span>
-        </button>
-      </div>
+      {/* 発表ムービー＆先月の結果（今月タブのみ） */}
+      {period === 'month' && (
+        <>
+          <div className="px-5 pb-2">
+            <button
+              onClick={showFilm}
+              className="relative flex w-full items-center justify-between overflow-hidden rounded-card bg-gradient-to-br from-[#2a1640] via-oshi-purple to-oshi-pink p-4 text-white shadow-card active:scale-[0.98]"
+            >
+              <span className="relative">
+                <span className="block text-base font-black">🎬 No.1 FAN 発表ムービー</span>
+                <span className="block text-xs opacity-90">
+                  {monthLabel(lastMonth)}・総合の頂点を映画みたいに発表
+                </span>
+              </span>
+              <span className="relative text-2xl">▶</span>
+            </button>
+          </div>
 
-      {/* 先月の結果を見る */}
-      <div className="px-5">
-        <button
-          onClick={showRecap}
-          className="flex w-full items-center justify-between rounded-card bg-gradient-to-r from-oshi-pink to-oshi-purple p-4 text-white shadow-card active:scale-[0.98]"
-        >
-          <span>
-            <span className="block text-sm font-extrabold">📣 先月の結果を見る</span>
-            <span className="block text-xs opacity-90">
-              {monthLabel(lastMonth)}・{scopeLabel} のTOP5を発表
-            </span>
-          </span>
-          <span className="text-2xl">▶</span>
-        </button>
-      </div>
+          <div className="px-5">
+            <button
+              onClick={showRecap}
+              className="flex w-full items-center justify-between rounded-card bg-gradient-to-r from-oshi-pink to-oshi-purple p-4 text-white shadow-card active:scale-[0.98]"
+            >
+              <span>
+                <span className="block text-sm font-extrabold">📣 先月の結果を見る</span>
+                <span className="block text-xs opacity-90">
+                  {monthLabel(lastMonth)}・{scopeLabel} のTOP5を発表
+                </span>
+              </span>
+              <span className="text-2xl">▶</span>
+            </button>
+          </div>
+        </>
+      )}
 
       {/* ランキング本体 */}
       <div className="px-5 py-4">
