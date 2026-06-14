@@ -36,4 +36,7 @@ export const SOURCES = [
   { id: 'ini', name: 'INI', parser: 'lapone', status: 'ok', base: 'https://ini-official.com' },
   { id: 'dxteen', name: 'DXTEEN', parser: 'lapone', status: 'ok', base: 'https://dxteen.com' },
   { id: 'mei', name: 'ME:I', parser: 'lapone', status: 'ok', base: 'https://me-i.jp' },
+
+  // --- スターダスト系（公式サイト /schedule・サーバーレンダリング） ---
+  { id: 'momoclo', name: 'ももいろクローバーZ', parser: 'stardust', status: 'ok', base: 'https://www.momoclo.net' },
 ]
