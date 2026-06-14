@@ -30,4 +30,10 @@ export const SOURCES = [
     base: 'https://sakurazaka46.com/s/s46' },
   { id: 'hinatazaka46', name: '日向坂46', parser: 'hinatazaka', status: 'ok',
     base: 'https://www.hinatazaka46.com/s/official' },
+
+  // --- LAPONE系（PRODUCE 101 JAPAN 出身など人気グループ・同一CMS） ---
+  { id: 'jo1', name: 'JO1', parser: 'lapone', status: 'ok', base: 'https://jo1.jp' },
+  { id: 'ini', name: 'INI', parser: 'lapone', status: 'ok', base: 'https://ini-official.com' },
+  { id: 'dxteen', name: 'DXTEEN', parser: 'lapone', status: 'ok', base: 'https://dxteen.com' },
+  { id: 'mei', name: 'ME:I', parser: 'lapone', status: 'ok', base: 'https://me-i.jp' },
 ]

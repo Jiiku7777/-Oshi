@@ -13,6 +13,7 @@ import { collectIyimei } from './parsers/iyimei.mjs'
 import { collectAsobi } from './parsers/asobisystem.mjs'
 import { collectSakurazaka } from './parsers/sakurazaka.mjs'
 import { collectHinatazaka } from './parsers/hinatazaka.mjs'
+import { collectLapone } from './parsers/lapone.mjs'
 
 const PARSERS = {
   nogizaka: collectNogizaka,
@@ -20,6 +21,7 @@ const PARSERS = {
   asobisystem: collectAsobi,
   sakurazaka: collectSakurazaka,
   hinatazaka: collectHinatazaka,
+  lapone: collectLapone,
 }
 
 async function main() {

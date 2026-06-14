@@ -16,6 +16,10 @@ export const GROUPS: Group[] = [
   { id: 'nogizaka46', name: '乃木坂46', color: '#7E5BFF', reading: 'のぎざかフォーティーシックス' },
   { id: 'sakurazaka46', name: '櫻坂46', color: '#FF6FA3', reading: 'さくらざかフォーティーシックス' },
   { id: 'hinatazaka46', name: '日向坂46', color: '#8FD3FF', reading: 'ひなたざかフォーティーシックス' },
+  { id: 'jo1', name: 'JO1', color: '#3A57D6', reading: 'ジェイオーワン' },
+  { id: 'ini', name: 'INI', color: '#1FB6C9', reading: 'アイエヌアイ' },
+  { id: 'dxteen', name: 'DXTEEN', color: '#E0566A', reading: 'ディーエックスティーン' },
+  { id: 'mei', name: 'ME:I', color: '#E94FB0', reading: 'ミーアイ' },
 ]
 
 // グループごとの固有マーク。色が似ていても（ピンク系が多い）一目で見分けられるように。
@@ -30,6 +34,10 @@ const GROUP_EMOJI: Record<string, string> = {
   'nogizaka46': '🐐',
   'sakurazaka46': '🌸',
   'hinatazaka46': '☀️',
+  'jo1': '🔷',
+  'ini': '🟢',
+  'dxteen': '🔥',
+  'mei': '💖',
 }
 
 export function getGroupEmoji(id: string): string {
