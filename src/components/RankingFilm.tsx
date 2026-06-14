@@ -59,7 +59,7 @@ const ORDER: { scene: Scene; ms: number }[] = [
   { scene: 'intro', ms: 2200 },
   { scene: 'dome', ms: 8500 },
   { scene: 'day2', ms: 2200 },
-  { scene: 'venue', ms: 6800 },
+  { scene: 'venue', ms: 8200 },
   { scene: 'dark2', ms: 1600 },
   { scene: 'sns', ms: 12500 },
   { scene: 'black', ms: 1500 },
@@ -128,7 +128,7 @@ export function RankingFilm({
       case 'intro': a.start(); a.intensity(0); a.chord('base'); break
       case 'dome': a.start(); a.chord('bright'); a.intensity(2); a.cheer(true); break
       case 'day2': a.cheer(false); a.intensity(0); break
-      case 'venue': a.chord('bright'); a.intensity(2); a.cheer(true); break
+      case 'venue': a.chord('bright'); a.intensity(2); a.cheer(true); a.sparkle(); break
       case 'dark2': a.cheer(false); a.intensity(0); break
       case 'sns': a.cheer(false); a.chord('base'); a.intensity(1); break
       case 'black': a.intensity(0); break
@@ -330,32 +330,127 @@ function DomeScene({ fans }: { fans: LeaderEntry[] }) {
   )
 }
 
-/* ===== 別会場（TOP15・近く大きく） ===== */
+/* ===== 別会場（TOP15・1回目より豪華／2F・3F＋レーザー＋ピロ＋大型スクリーン） ===== */
 function VenueScene({ fans }: { fans: LeaderEntry[] }) {
-  const layout = rowLayout(15, 3, { left0: 13, left1: 87, topBack: 44, topFront: 80, scaleBack: 0.82, scaleFront: 1.28 })
+  const layout = rowLayout(15, 3, { left0: 13, left1: 87, topBack: 48, topFront: 82, scaleBack: 0.84, scaleFront: 1.3 })
   return (
     <div className="relative h-full w-full overflow-hidden">
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(120% 85% at 50% 120%, #7E5BFF66 0%, #1a1030 52%, #07040f 100%)' }} />
-      <div className="absolute left-1/2 top-0 h-full w-[70%] -translate-x-1/2 bg-gradient-to-b from-white/15 to-transparent blur-2xl" />
-      <PenlightSea count={60} top0={36} top1={92} />
+      {/* 背景：金×マゼンタ×紫の最大級ステージ */}
+      <div className="absolute inset-0" style={{ background: 'radial-gradient(135% 95% at 50% 122%, #FFD36E55 0%, #FF6FA34d 26%, #4a1d6e 60%, #07040f 100%)' }} />
+      {/* 大型スクリーン（ステージ奥） */}
+      <div
+        className="absolute left-1/2 top-[9%] h-[20%] w-[64%] -translate-x-1/2 rounded-xl border border-white/20 bg-gradient-to-br from-oshi-pink/40 via-oshi-purple/40 to-oshi-blue/40"
+        style={{ animation: 'film-screen-pulse 1.8s ease-in-out infinite', boxShadow: '0 0 40px 6px rgba(255,143,177,0.35)' }}
+      >
+        <div className="flex h-full items-center justify-center text-4xl font-black tracking-widest opacity-90 drop-shadow">♡ TOP 15</div>
+      </div>
+
+      {/* レーザー（上隅から左右に走査） */}
+      <Lasers />
+      {/* 中央スポット光 */}
+      <div className="absolute left-1/2 top-0 h-full w-[72%] -translate-x-1/2 bg-gradient-to-b from-white/18 via-transparent to-transparent blur-2xl" />
+
+      {/* 3F / 2F スタンド（ぐるりと囲む観客） */}
+      <div className="absolute inset-x-0 top-[30%] h-[12%]">
+        <PenlightSea count={48} top0={0} top1={70} />
+        <div className="absolute bottom-0 h-2.5 w-full bg-gradient-to-b from-white/25 to-white/5 shadow-[0_4px_12px_rgba(0,0,0,0.5)]" />
+        <span className="absolute bottom-0.5 right-3 rounded bg-black/30 px-2 text-[10px] font-bold tracking-widest">3F</span>
+      </div>
+      <div className="absolute inset-x-0 top-[42%] h-[12%]">
+        <PenlightSea count={54} top0={0} top1={70} />
+        <div className="absolute bottom-0 h-2.5 w-full bg-gradient-to-b from-white/25 to-white/5 shadow-[0_4px_12px_rgba(0,0,0,0.5)]" />
+        <span className="absolute bottom-0.5 right-3 rounded bg-black/30 px-2 text-[10px] font-bold tracking-widest">2F</span>
+      </div>
+      {/* 左右のサイドスタンド（バウル状の囲み感） */}
+      <div className="absolute left-0 top-[30%] h-[40%] w-10 bg-gradient-to-r from-white/10 to-transparent" />
+      <div className="absolute right-0 top-[30%] h-[40%] w-10 bg-gradient-to-l from-white/10 to-transparent" />
+
+      {/* 1F アリーナのペンライト */}
+      <PenlightSea count={66} top0={56} top1={94} />
+
+      {/* ステージ前のピロ（火花の噴水） */}
+      <SparkFountain side="left" />
+      <SparkFountain side="right" />
+
+      {/* 金の紙吹雪 */}
+      {Array.from({ length: 16 }).map((_, i) => (
+        <span
+          key={i}
+          className="pointer-events-none absolute top-0 h-3 w-1.5 rounded-sm"
+          style={{ left: `${4 + rnd(i, 41) * 92}%`, background: i % 2 ? '#FFD36E' : '#FFF1B8', opacity: 0.85, animation: `film-tape-fall ${2.6 + rnd(i, 42) * 1.8}s linear ${rnd(i, 43) * 1.5}s infinite` }}
+        />
+      ))}
+
+      {/* 1F：TOP15 のアイコン */}
       <div className="absolute inset-0">
         {fans.map((f, i) => (
           <div
             key={f.uid}
             className="absolute"
-            style={{ left: `${layout[i].left}%`, top: `${layout[i].top}%`, transform: `translateX(-50%) scale(${layout[i].scale})`, zIndex: 10 + layout[i].z }}
+            style={{ left: `${layout[i].left}%`, top: `${layout[i].top}%`, transform: `translateX(-50%) scale(${layout[i].scale})`, zIndex: 20 + layout[i].z }}
           >
             <div style={{ animation: `film-avatar-pop 0.5s ease-out ${layout[i].delay}s both` }}>
-              <FanIcon f={f} size={56} i={i} />
+              <FanIcon f={f} size={58} i={i} />
             </div>
           </div>
         ))}
       </div>
-      <div className="absolute inset-x-0 top-[5%] text-center" style={{ animation: 'film-rise 0.7s ease-out both' }}>
-        <p className="text-xs font-bold tracking-widest opacity-90 drop-shadow">別会場</p>
-        <p className="mt-1 text-6xl font-black drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">TOP 15</p>
-        <p className="mt-1 text-xs font-bold opacity-90 drop-shadow">歓声が近づく</p>
+
+      <div className="absolute inset-x-0 top-[2%] text-center" style={{ animation: 'film-rise 0.7s ease-out both' }}>
+        <p className="text-xs font-bold tracking-[0.3em] text-amber-200 drop-shadow">別会場・最大級のステージ</p>
+        <p
+          className="mt-0.5 text-6xl font-black drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
+          style={{ background: 'linear-gradient(180deg,#FFF1B8,#FFD36E)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}
+        >
+          TOP 15
+        </p>
       </div>
+    </div>
+  )
+}
+
+/* レーザー光（上隅から走査） */
+function Lasers() {
+  const beams = [
+    { left: '12%', color: '#8FD3FF' },
+    { left: '32%', color: '#FF6FA3' },
+    { left: '68%', color: '#B79CED' },
+    { left: '88%', color: '#9CE0D6' },
+  ]
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {beams.map((b, i) => (
+        <div
+          key={i}
+          className="absolute top-0 h-[85%] w-[3px] origin-top"
+          style={{
+            left: b.left,
+            background: `linear-gradient(180deg, ${b.color}, transparent)`,
+            boxShadow: `0 0 12px 2px ${b.color}`,
+            animation: `film-laser ${2.4 + i * 0.4}s ease-in-out ${i * 0.2}s infinite`,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* ステージ前のピロ（火花の噴水） */
+function SparkFountain({ side }: { side: 'left' | 'right' }) {
+  return (
+    <div className="pointer-events-none absolute bottom-[14%]" style={{ [side]: '20%' } as React.CSSProperties}>
+      {Array.from({ length: 12 }).map((_, i) => (
+        <span
+          key={i}
+          className="absolute bottom-0 h-1.5 w-1.5 rounded-full"
+          style={{
+            left: `${(rnd(i, 51) - 0.5) * 40}px`,
+            background: i % 2 ? '#FFD36E' : '#FFFFFF',
+            boxShadow: '0 0 8px 2px #FFD36E',
+            animation: `film-spark-up ${0.9 + rnd(i, 52) * 0.7}s ease-out ${rnd(i, 53) * 1.2}s infinite`,
+          }}
+        />
+      ))}
     </div>
   )
 }

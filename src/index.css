@@ -79,4 +79,17 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
+@keyframes film-laser {
+  0% { transform: rotate(-24deg); opacity: 0.5; }
+  50% { transform: rotate(24deg); opacity: 0.95; }
+  100% { transform: rotate(-24deg); opacity: 0.5; }
+}
+@keyframes film-spark-up {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-150px) scale(0.3); opacity: 0; }
+}
+@keyframes film-screen-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.95; }
+}
 .film-fade { transition: opacity 1.2s ease; }
