@@ -519,43 +519,71 @@ function SnsScene({ top5 }: { top5: LeaderEntry[] }) {
   )
 }
 
-/* アイドルの家（夜の部屋）の背景 */
+/* アイドルの家（夜の部屋）の背景 — できるだけかわいく */
 function HomeRoom() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* 壁 */}
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,#3b2b46 0%,#2a1f38 55%,#1a1226 100%)' }} />
+      {/* 壁（やさしいパステル・モーヴ） */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,#6a5279 0%,#54416a 50%,#3a2c4d 100%)' }} />
+      {/* 壁紙のハート柄（うっすら） */}
+      {Array.from({ length: 12 }).map((_, i) => (
+        <span key={`w${i}`} className="absolute text-sm opacity-[0.08]" style={{ left: `${(i % 4) * 26 + 6}%`, top: `${Math.floor(i / 4) * 16 + 8}%` }}>♥</span>
+      ))}
       {/* ランプの暖かい光 */}
-      <div className="absolute -right-10 top-0 h-44 w-44 rounded-full bg-amber-300/25 blur-3xl" />
+      <div className="absolute -right-10 top-2 h-44 w-44 rounded-full bg-pink-200/25 blur-3xl" />
+      <div className="absolute -left-8 top-1/3 h-36 w-36 rounded-full bg-amber-200/20 blur-3xl" />
 
-      {/* 窓（夜空＋月＋星） */}
-      <div className="absolute left-4 top-7 h-28 w-24 overflow-hidden rounded-md border-4 border-[#5b4a6b]" style={{ background: 'linear-gradient(180deg,#1b2c52,#0e1730)' }}>
-        <div className="absolute right-2 top-2 h-7 w-7 rounded-full bg-[#f5e6b8]" style={{ boxShadow: '0 0 10px 2px #f5e6b8aa' }} />
+      {/* ハートのガーランド（上部） */}
+      <div className="absolute inset-x-0 top-1 flex justify-around px-2">
+        {Array.from({ length: 11 }).map((_, i) => (
+          <span key={`g${i}`} className="text-xs" style={{ color: ['#ff9ec7', '#ffd6e6', '#c9b6ff', '#ffe0a3'][i % 4], transform: `translateY(${i % 2 ? 4 : 0}px) rotate(${i % 2 ? 8 : -8}deg)`, filter: 'drop-shadow(0 0 3px rgba(255,158,199,0.6))', animation: `film-twinkle ${1.4 + rnd(i, 95)}s ease-in-out ${rnd(i, 96)}s infinite` }}>♥</span>
+        ))}
+      </div>
+
+      {/* 窓（夜空＋月＋星）＋ピンクのカーテン */}
+      <div className="absolute left-4 top-8 h-28 w-24 overflow-hidden rounded-xl border-4 border-[#caa6e0]" style={{ background: 'linear-gradient(180deg,#27407a,#14224a)' }}>
+        <div className="absolute right-2 top-2 h-7 w-7 rounded-full bg-[#fff3c4]" style={{ boxShadow: '0 0 10px 3px #fff3c4aa' }} />
         {Array.from({ length: 7 }).map((_, i) => (
-          <span key={i} className="absolute h-[3px] w-[3px] rounded-full bg-white" style={{ left: `${10 + rnd(i, 91) * 70}%`, top: `${30 + rnd(i, 92) * 60}%`, animation: `film-twinkle ${1 + rnd(i, 93)}s ease-in-out ${rnd(i, 94)}s infinite` }} />
-        ))}
-        <div className="absolute left-1/2 top-0 h-full w-[3px] -translate-x-1/2 bg-[#5b4a6b]" />
-        <div className="absolute left-0 top-1/2 h-[3px] w-full -translate-y-1/2 bg-[#5b4a6b]" />
-      </div>
-
-      {/* フェアリーライト（上部） */}
-      <div className="absolute inset-x-0 top-1 flex justify-around px-3">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <span key={i} className="h-1.5 w-1.5 rounded-full" style={{ background: '#ffd98a', boxShadow: '0 0 6px 2px #ffd98a', animation: `film-twinkle ${1 + rnd(i, 95)}s ease-in-out ${rnd(i, 96)}s infinite` }} />
+          <span key={`st${i}`} className="absolute text-[8px] text-white" style={{ left: `${10 + rnd(i, 91) * 70}%`, top: `${28 + rnd(i, 92) * 60}%`, animation: `film-twinkle ${1 + rnd(i, 93)}s ease-in-out ${rnd(i, 94)}s infinite` }}>✦</span>
         ))}
       </div>
+      <div className="absolute left-2 top-7 h-28 w-5 rounded-b-full bg-[#ff9ec7]/70" />
+      <div className="absolute left-[104px] top-7 h-28 w-5 rounded-b-full bg-[#ff9ec7]/70" />
 
-      {/* 推しのポスター */}
-      <div className="absolute right-4 top-9 flex h-24 w-16 items-center justify-center rounded-sm border-2 border-white/20 text-xl" style={{ background: 'linear-gradient(180deg,#7e5bff,#ff8fb1)' }}>♡</div>
-      <div className="absolute right-24 top-12 flex h-16 w-12 items-center justify-center rounded-sm border-2 border-white/15 bg-[#2a2036] text-[9px] text-white/60">LIVE</div>
+      {/* ネオンのハート看板 */}
+      <div className="absolute left-1/2 top-5 -translate-x-1/2 text-2xl" style={{ color: '#ff8fc8', filter: 'drop-shadow(0 0 8px #ff6fb0)', animation: 'film-glow-pulse 2.2s ease-in-out infinite' }}>♡</div>
 
-      {/* ベッド（ヘッドボード＋枕＋ぬいぐるみ＋ペンライト） */}
-      <div className="absolute bottom-0 left-0 h-[26%] w-full" style={{ background: 'linear-gradient(180deg,#3a2740,#241830)' }}>
-        <div className="absolute -top-2 left-0 h-3 w-full rounded-t-xl bg-[#4a3358]" />
-        <div className="absolute top-3 left-5 h-8 w-16 rounded-lg bg-[#efe3f5]" />
-        <div className="absolute right-6 top-1 text-3xl">🧸</div>
-        <div className="absolute right-24 top-4 h-7 w-2 rotate-12 rounded-full" style={{ background: '#8FD3FF', boxShadow: '0 0 8px 2px #8FD3FF' }} />
+      {/* 推しのポスター（パステル） */}
+      <div className="absolute right-4 top-10 flex h-24 w-16 items-center justify-center rounded-md border-2 border-white/40 text-xl" style={{ background: 'linear-gradient(180deg,#b79cff,#ff9ec7)' }}>♡</div>
+      <div className="absolute right-[88px] top-12 flex h-14 w-11 items-center justify-center rounded-md border-2 border-white/30 text-[9px] text-[#5b3f6e]" style={{ background: 'linear-gradient(180deg,#bff0e4,#a3d8ff)' }}>LIVE♪</div>
+
+      {/* ドレッサー（丸い鏡） */}
+      <div className="absolute left-4 top-[44%]">
+        <div className="h-12 w-12 rounded-full border-4 border-[#ffd6e6]" style={{ background: 'radial-gradient(circle at 35% 30%, #ffffff66, #c9b6ff44)' }} />
+        <div className="mt-1 h-5 w-16 rounded-md bg-[#7a5d8c]" />
+        <div className="absolute left-2 top-9 text-sm">🌸</div>
       </div>
+
+      {/* 観葉植物 */}
+      <div className="absolute right-3 top-[46%] text-2xl">🪴</div>
+
+      {/* ふわふわラグ */}
+      <div className="absolute bottom-[24%] left-1/2 h-8 w-44 -translate-x-1/2 rounded-[50%] bg-[#ffc7de]/40 blur-[1px]" />
+
+      {/* ベッド（パステルの掛け布団＋枕＋ぬいぐるみ＋ハートクッション＋ペンライト） */}
+      <div className="absolute bottom-0 left-0 h-[26%] w-full" style={{ background: 'linear-gradient(180deg,#ffb3d9,#e98fc0)' }}>
+        <div className="absolute -top-2 left-0 h-3 w-full rounded-t-2xl bg-[#fff0f7]" />
+        <div className="absolute top-3 left-5 h-9 w-16 rounded-2xl bg-[#fff0f7]" />
+        <div className="absolute right-5 top-0 text-3xl">🧸</div>
+        <div className="absolute right-[68px] top-1 text-2xl">🐰</div>
+        <div className="absolute right-[120px] top-3 text-xl">💗</div>
+        <div className="absolute right-[150px] top-2 h-7 w-2 rotate-12 rounded-full" style={{ background: '#8FD3FF', boxShadow: '0 0 8px 2px #8FD3FF' }} />
+      </div>
+
+      {/* 漂うハート＆キラキラ */}
+      {Array.from({ length: 7 }).map((_, i) => (
+        <span key={`f${i}`} className="absolute text-sm" style={{ left: `${10 + rnd(i, 81) * 80}%`, top: `${30 + rnd(i, 82) * 45}%`, color: '#ffd6e6', animation: `film-shimmer ${2 + rnd(i, 83) * 1.5}s ease-out ${rnd(i, 84) * 2.5}s infinite` }}>{i % 2 ? '✨' : '💕'}</span>
+      ))}
     </div>
   )
 }
@@ -572,7 +600,7 @@ function BoothScene({ showHand }: { showHand: boolean }) {
       {/* 場面説明（何のシーンか分かるように） */}
       <div className="absolute inset-x-0 top-[14%] text-center" style={{ animation: 'film-rise 0.7s ease-out both' }}>
         <p className="text-xs font-bold tracking-widest text-amber-200">
-          {showHand ? '推しが、まっすぐ手を差し伸べた──' : '今月いちばん応援してくれた“No.1 FAN”との特典会'}
+          {showHand ? '推しが、両手で「ありがとう」を伝えにきた──' : '今月いちばん応援してくれた“No.1 FAN”との特典会'}
         </p>
       </div>
 
@@ -617,10 +645,10 @@ function BoothScene({ showHand }: { showHand: boolean }) {
           {/* 温かい光 */}
           <div className="pointer-events-none absolute bottom-[2%] left-1/2 h-44 w-44 -translate-x-1/2 rounded-full bg-amber-200/25 blur-2xl" />
 
-          {/* 下から差し伸べる手（握手直前で停止） */}
+          {/* 下から両手で差し伸べる（握手直前で停止） */}
           <div className="absolute bottom-0 left-1/2 z-10 -translate-x-1/2">
             <div style={{ animation: 'film-hand-rise 1.6s cubic-bezier(0.2,0.8,0.2,1) both' }}>
-              <ReachHand />
+              <TwoHandReach />
             </div>
           </div>
 
@@ -835,6 +863,24 @@ function ReachHand() {
       </g>
       <path d="M62 166c10 7 24 11 38 11s28-4 38-11l-3 18c-2 16-17 25-35 25s-33-9-35-25l-3-18z" fill="#0000000f" />
     </svg>
+  )
+}
+
+/* 両手で差し伸べる（握手するように左右の手をそろえて出す） */
+function TwoHandReach() {
+  return (
+    <div className="relative" style={{ width: 296, height: 250 }}>
+      <div className="absolute bottom-0 left-0 origin-bottom" style={{ transform: 'rotate(12deg)' }}>
+        <div className="origin-bottom scale-[0.84]">
+          <ReachHand />
+        </div>
+      </div>
+      <div className="absolute bottom-0 right-0 origin-bottom" style={{ transform: 'scaleX(-1) rotate(12deg)' }}>
+        <div className="origin-bottom scale-[0.84]">
+          <ReachHand />
+        </div>
+      </div>
+    </div>
   )
 }
 
