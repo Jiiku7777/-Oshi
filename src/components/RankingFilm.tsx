@@ -860,71 +860,36 @@ function IntroScene({ monthKey }: { monthKey: string }) {
   )
 }
 
-/* ===== 手（SVG・なめらかな形） ===== */
-function ReachHand() {
-  // 下から差し伸べる開いた手（指は細め・長さに変化・爪と陰影で自然に）
-  return (
-    <svg width="186" height="250" viewBox="0 0 200 270" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#FAD7B8" />
-          <stop offset="1" stopColor="#E0A57B" />
-        </linearGradient>
-        <linearGradient id="nail" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#FBE6D6" />
-          <stop offset="1" stopColor="#F2CDB0" />
-        </linearGradient>
-      </defs>
-      {/* 袖（ニット）＋前腕 */}
-      <rect x="60" y="214" width="84" height="56" rx="18" fill="#6d5bd0" />
-      <rect x="60" y="214" width="84" height="9" rx="4" fill="#7d6de0" />
-      <rect x="80" y="150" width="40" height="78" rx="20" fill="url(#skin)" />
-
-      {/* 指4本（手のひらの後ろに配置して付け根を自然に隠す） */}
-      <g>
-        <rect x="70" y="46" width="18" height="88" rx="9" fill="url(#skin)" transform="rotate(-7 79 128)" />
-        <rect x="91" y="32" width="19" height="100" rx="9.5" fill="url(#skin)" />
-        <rect x="112" y="44" width="18" height="90" rx="9" fill="url(#skin)" transform="rotate(6 121 128)" />
-        <rect x="132" y="64" width="15" height="72" rx="7.5" fill="url(#skin)" transform="rotate(14 139 128)" />
-      </g>
-      {/* 爪 */}
-      <rect x="74" y="50" width="11" height="13" rx="5" fill="url(#nail)" transform="rotate(-7 79 56)" />
-      <rect x="95" y="37" width="12" height="14" rx="6" fill="url(#nail)" />
-      <rect x="116" y="49" width="11" height="13" rx="5" fill="url(#nail)" transform="rotate(6 121 55)" />
-      <rect x="134" y="69" width="10" height="11" rx="5" fill="url(#nail)" transform="rotate(14 139 74)" />
-
-      {/* 手のひら（指の上に重ねてナックルを作る） */}
-      <path d="M58 142c0-18 12-28 42-28s42 10 42 28l-4 40c-2 18-18 28-38 28s-36-10-38-28l-4-40z" fill="url(#skin)" />
-      {/* 親指（手前・横から） */}
-      <rect x="40" y="150" width="20" height="56" rx="10" fill="url(#skin)" transform="rotate(-50 60 162)" />
-      <rect x="44" y="152" width="12" height="13" rx="6" fill="url(#nail)" transform="rotate(-50 56 158)" />
-
-      {/* 指の境目＆手のひらの陰影 */}
-      <g stroke="#00000018" strokeWidth="2" strokeLinecap="round">
-        <path d="M90 126l1 16" />
-        <path d="M110 124l0 16" />
-        <path d="M130 127l-1 15" />
-      </g>
-      <path d="M62 166c10 7 24 11 38 11s28-4 38-11l-3 18c-2 16-17 25-35 25s-33-9-35-25l-3-18z" fill="#0000000f" />
-    </svg>
-  )
-}
-
-/* 両手で差し伸べる（握手するように左右の手をそろえて出す） */
+/* ===== 自分（アイドル）視点で両手を前に差し出す ===== */
+/* 前腕が画面下の左右から伸び、手が中央で相手を迎える一人称視点。 */
 function TwoHandReach() {
+  const skin = '#F6C9A4'
+  const line = '#b97c54'
   return (
-    <div className="relative" style={{ width: 296, height: 250 }}>
-      <div className="absolute bottom-0 left-0 origin-bottom" style={{ transform: 'rotate(12deg)' }}>
-        <div className="origin-bottom scale-[0.84]">
-          <ReachHand />
-        </div>
-      </div>
-      <div className="absolute bottom-0 right-0 origin-bottom" style={{ transform: 'scaleX(-1) rotate(12deg)' }}>
-        <div className="origin-bottom scale-[0.84]">
-          <ReachHand />
-        </div>
-      </div>
-    </div>
+    <svg width="290" viewBox="0 0 300 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <g id="ownhand" fill={skin} stroke={line} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
+          {/* 前腕（下から） */}
+          <rect x="-24" y="-96" width="48" height="112" rx="22" />
+          {/* 手の甲 */}
+          <rect x="-31" y="-150" width="62" height="66" rx="26" />
+          {/* 指4本（前へ・軽く揃える） */}
+          <rect x="-31" y="-200" width="16" height="60" rx="8" transform="rotate(-12 -23 -150)" />
+          <rect x="-14" y="-210" width="16" height="70" rx="8" transform="rotate(-4 -6 -150)" />
+          <rect x="3" y="-212" width="16" height="72" rx="8" transform="rotate(4 11 -150)" />
+          <rect x="20" y="-203" width="15" height="62" rx="7.5" transform="rotate(12 27 -150)" />
+          {/* 親指（内側） */}
+          <rect x="20" y="-150" width="17" height="50" rx="8.5" transform="rotate(50 28 -138)" />
+        </g>
+      </defs>
+      {/* 手の甲のしわ（指の境目）— 各手に重ねる */}
+      <use href="#ownhand" transform="translate(66,252) rotate(20)" />
+      <use href="#ownhand" transform="translate(234,252) scale(-1,1) rotate(20)" />
+      <g stroke={line} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7">
+        <path d="M96 150 q6 10 4 22" />
+        <path d="M204 150 q-6 10 -4 22" />
+      </g>
+    </svg>
   )
 }
 
