@@ -40,4 +40,7 @@ export const SOURCES = [
   // --- スターダスト系（公式サイト・サーバーレンダリング） ---
   { id: 'momoclo', name: 'ももいろクローバーZ', parser: 'stardust', status: 'ok', base: 'https://www.momoclo.net' },
   { id: 'tokisen', name: '超ときめき♡宣伝部', parser: 'tokisen', status: 'ok', base: 'https://toki-sen.com' },
+
+  // --- SKIYAKI系 ---
+  { id: 'onenonly', name: "ONE N' ONLY", parser: 'skiyaki', status: 'ok', base: 'https://one-n-only.jp' },
 ]
