@@ -1,6 +1,7 @@
 // 共通ユーティリティ：カテゴリ判定・日付整形
 
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) OshiHubBot/0.1'
+// 一部の公式サイトがBot系UAを弾くため、一般的なブラウザUAを使う
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 
 export async function fetchText(url) {
   const r = await fetch(url, { headers: { 'User-Agent': UA }, redirect: 'follow' })

@@ -15,6 +15,7 @@ import { collectSakurazaka } from './parsers/sakurazaka.mjs'
 import { collectHinatazaka } from './parsers/hinatazaka.mjs'
 import { collectLapone } from './parsers/lapone.mjs'
 import { collectStardust } from './parsers/stardust.mjs'
+import { collectTokisen } from './parsers/tokisen.mjs'
 
 const PARSERS = {
   nogizaka: collectNogizaka,
@@ -24,6 +25,7 @@ const PARSERS = {
   hinatazaka: collectHinatazaka,
   lapone: collectLapone,
   stardust: collectStardust,
+  tokisen: collectTokisen,
 }
 
 async function main() {

@@ -37,6 +37,7 @@ export const SOURCES = [
   { id: 'dxteen', name: 'DXTEEN', parser: 'lapone', status: 'ok', base: 'https://dxteen.com' },
   { id: 'mei', name: 'ME:I', parser: 'lapone', status: 'ok', base: 'https://me-i.jp' },
 
-  // --- スターダスト系（公式サイト /schedule・サーバーレンダリング） ---
+  // --- スターダスト系（公式サイト・サーバーレンダリング） ---
   { id: 'momoclo', name: 'ももいろクローバーZ', parser: 'stardust', status: 'ok', base: 'https://www.momoclo.net' },
+  { id: 'tokisen', name: '超ときめき♡宣伝部', parser: 'tokisen', status: 'ok', base: 'https://toki-sen.com' },
 ]
