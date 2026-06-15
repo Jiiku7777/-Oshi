@@ -50,4 +50,7 @@ export const SOURCES = [
   { id: 'sixtones', name: 'SixTONES', parser: 'starto', status: 'ok', tagId: 42 },
   { id: 'snowman', name: 'Snow Man', parser: 'starto', status: 'ok', tagId: 43 },
   { id: 'aegroup', name: 'Aぇ! group', parser: 'starto', status: 'ok', tagId: 157 },
+
+  // --- スターダスト（SDP）M!LK: /contents/schedule は直近の過去分しかSSRせず未来はJS読み込みのため保留 ---
+  { id: 'milk', name: 'M!LK', parser: 'sdmilk', status: 'todo', base: 'https://sd-milk.com' },
 ]
