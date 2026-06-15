@@ -43,4 +43,11 @@ export const SOURCES = [
 
   // --- SKIYAKI系 ---
   { id: 'onenonly', name: "ONE N' ONLY", parser: 'skiyaki', status: 'ok', base: 'https://one-n-only.jp' },
+
+  // --- STARTO ENTERTAINMENT（公式JSON API・出演情報。tagId でグループ判定） ---
+  { id: 'naniwa', name: 'なにわ男子', parser: 'starto', status: 'ok', tagId: 56 },
+  { id: 'timelesz', name: 'timelesz', parser: 'starto', status: 'ok', tagId: 24 },
+  { id: 'sixtones', name: 'SixTONES', parser: 'starto', status: 'ok', tagId: 42 },
+  { id: 'snowman', name: 'Snow Man', parser: 'starto', status: 'ok', tagId: 43 },
+  { id: 'aegroup', name: 'Aぇ! group', parser: 'starto', status: 'ok', tagId: 157 },
 ]

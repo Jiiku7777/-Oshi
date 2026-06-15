@@ -23,6 +23,11 @@ export const GROUPS: Group[] = [
   { id: 'momoclo', name: 'ももいろクローバーZ', color: '#E23B3B', reading: 'ももいろクローバーゼット' },
   { id: 'tokisen', name: '超ときめき♡宣伝部', color: '#C840C0', reading: 'ちょうときめきせんでんぶ' },
   { id: 'onenonly', name: "ONE N' ONLY", color: '#C9A227', reading: 'ワンエンオンリー' },
+  { id: 'naniwa', name: 'なにわ男子', color: '#F0A030', reading: 'なにわだんし' },
+  { id: 'timelesz', name: 'timelesz', color: '#2E86C1', reading: 'タイムレス' },
+  { id: 'sixtones', name: 'SixTONES', color: '#555E6B', reading: 'ストーンズ' },
+  { id: 'snowman', name: 'Snow Man', color: '#79A8D9', reading: 'スノーマン' },
+  { id: 'aegroup', name: 'Aぇ! group', color: '#C0506E', reading: 'エーグループ' },
 ]
 
 // グループごとの固有マーク。色が似ていても（ピンク系が多い）一目で見分けられるように。
@@ -44,6 +49,11 @@ const GROUP_EMOJI: Record<string, string> = {
   'momoclo': '🌈',
   'tokisen': '💘',
   'onenonly': '🎧',
+  'naniwa': '🟡',
+  'timelesz': '🕰️',
+  'sixtones': '⚫',
+  'snowman': '⛄',
+  'aegroup': '🅰️',
 }
 
 export function getGroupEmoji(id: string): string {
