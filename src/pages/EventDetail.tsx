@@ -5,7 +5,7 @@ import { fetchEvents } from '@/services/eventService'
 import { getGroup } from '@/data/groups'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { Loading } from '@/components/Loading'
-import { SOURCE_LABEL } from '@/utils/category'
+import { SOURCE_LABEL, attendAction } from '@/utils/category'
 import { formatDateLong, formatTime } from '@/utils/date'
 import { getAffiliateLink } from '@/utils/affiliate'
 import { fetchAttendance, setAttendance } from '@/services/attendanceService'
@@ -212,7 +212,9 @@ function AttendanceToggle({ event, uid }: { event: OshiEvent; uid?: string }) {
           : 'border-2 border-oshi-pink bg-white text-oshi-pink'
       }`}
     >
-      {attended ? '✓ 参戦済み！（推し活に記録）' : '＋ 参戦した！を記録'}
+      {attended
+        ? `✓ ${attendAction(event.category)}（記録済み）`
+        : `＋ ${attendAction(event.category)}を記録`}
     </button>
   )
 }

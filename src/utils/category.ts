@@ -36,6 +36,22 @@ export function categoryLabel(c: EventCategory): string {
   return CATEGORY_META[c].label
 }
 
+/** 参戦記録ボタンの動詞（カテゴリ別）。例: テレビ→「見た！」、ラジオ→「聴いた！」 */
+export const ATTEND_ACTION: Record<EventCategory, string> = {
+  live: '参戦した！',
+  event: '参加した！',
+  tv: '見た！',
+  radio: '聴いた！',
+  youtube: '見た！',
+  tiktok: '見た！',
+  release: '買った！',
+  goods: '買った！',
+}
+
+export function attendAction(c: EventCategory): string {
+  return ATTEND_ACTION[c] ?? '記録する'
+}
+
 export const SOURCE_LABEL: Record<EventSource, string> = {
   official_site: '公式サイト',
   official_x: '公式X',
