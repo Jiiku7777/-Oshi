@@ -5,7 +5,7 @@ import { useEvents, useNews } from '@/hooks/useEvents'
 import { EventCard } from '@/components/EventCard'
 import { CountdownSection } from '@/components/CountdownSection'
 import { Loading } from '@/components/Loading'
-import { getGroup } from '@/data/groups'
+import { getGroup, isStartoGroup, getGroupName } from '@/data/groups'
 import { isSameDay, isWithinDays, parseDate, formatDateShort } from '@/utils/date'
 
 export function Home() {
@@ -28,6 +28,7 @@ export function Home() {
   }, [events])
 
   const firstName = profile?.displayName?.split(' ')[0] ?? 'あなた'
+  const startoOshi = oshiIds.filter(isStartoGroup)
 
   return (
     <div className="animate-fade-in">
@@ -45,6 +46,17 @@ export function Home() {
           <Loading label="推しの予定を集めています…" />
         ) : (
           <>
+            {/* STARTO系は公式が直近の出演しか公開しないため少なめ、の注意書き */}
+            {startoOshi.length > 0 && (
+              <div className="rounded-card bg-oshi-blueLight/60 px-4 py-3 text-xs leading-relaxed text-oshi-text">
+                <span className="font-bold">📺 出演情報について</span>
+                <br />
+                {startoOshi.map(getGroupName).join('・')} は、公式が出演情報を
+                <b>直近1〜2週間ぶん</b>しか公開していないため、表示が少なめです。日が近づくと
+                <b>自動で増えていきます</b>（不具合ではありません）。
+              </div>
+            )}
+
             {/* カウントダウン（ピン留め） */}
             <CountdownSection />
 

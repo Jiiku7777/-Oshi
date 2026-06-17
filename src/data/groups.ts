@@ -60,6 +60,13 @@ export function getGroupEmoji(id: string): string {
   return GROUP_EMOJI[id] ?? '⭐'
 }
 
+// STARTO系（公式が出演情報を直近1〜2週間しか公開しないため予定が少なめ）
+export const STARTO_GROUP_IDS = ['naniwa', 'timelesz', 'sixtones', 'snowman', 'aegroup']
+
+export function isStartoGroup(id: string): boolean {
+  return STARTO_GROUP_IDS.includes(id)
+}
+
 const groupMap = new Map(GROUPS.map((g) => [g.id, g]))
 
 export function getGroups(): Group[] {
